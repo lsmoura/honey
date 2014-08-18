@@ -1,0 +1,3 @@
+[submodule "dispatch"]
+	path = dispatch
+	url = https://github.com/noodlehaus/dispatch.git
