@@ -1,4 +1,4 @@
-# Hi there!
+# Hello, Honey!
 
 Introducing the _lightweight_ blog **Honey**. Just clone the [github repository](http://github.com) into your php-enabled site, and you're good to go!
 
