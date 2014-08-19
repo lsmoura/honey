@@ -25,7 +25,6 @@ global $blog_title;
 global $contentdir;
 
 $contentdir = "content";
-
 $blog_title = 'Honey';
 
 // Compare function for sorting posts
@@ -41,13 +40,14 @@ function __honeyPostCmp($a, $b) {
 
 // Get an array with all posts published
 function getPostFileList() {
+	global $honeyRoot;
 	global $contentdir;
-	$files = array_diff(scandir($contentdir), array('.', '..'));
+	$files = array_diff(scandir($honeyRoot . '/' . $contentdir), array('.', '..'));
 
 	$entries = array();
 
 	foreach($files as $file) {
-		$filename = $contentdir . '/' . $file;
+		$filename = $honeyRoot . '/' . $contentdir . '/' . $file;
 
 		$info = pathinfo($filename);
 		$name = $info['filename'];
@@ -83,9 +83,10 @@ function getPostFileList() {
 
 // Get an specific post based on the slug
 function honeyGetPost($slug) {
+	global $honeyRoot;
 	global $contentdir;
 
-	$filename = $contentdir . '/' . $slug . '.md';
+	$filename = $honeyRoot . '/' . $contentdir . '/' . $slug . '.md';
 
 	if (file_exists($filename) == false) {
 		return(null);
@@ -123,11 +124,8 @@ function honeyHeader($onload = '') {
 	$stylesheets = array('bootstrap/bootstrap.min.css', 'bootstrap/bootstrap-theme.min.css');
 	$scripts = array('js/jquery-2.1.1.min.js', 'bootstrap/bootstrap.min.js');
 
-	// Epic Editor
-	//$scripts[] = '/epiceditor/epiceditor/js/epiceditor.min.js';
-
 	// Marked
-	$scripts[] = '/marked/marked.min.js';
+	$scripts[] = 'js/marked.min.js';
 
 	echo("<!doctype html>\n<html lang=\"en\">\n<head>\n");
 	echo("\t<meta charset=\"utf-8\">\n");

@@ -17,30 +17,215 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 */
 
-include_once("dispatch/src/dispatch.php");
+require_once("dispatch/src/dispatch.php");
+require_once("parsedown/Parsedown.php");
 
-function honeyHeader() {
-	echo("<!doctype html>\n<html lang=\"en\">\n<head>\n");
-	echo("\t<meta charset=\"utf-8\">\n");
-	echo("\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n");
-	echo("\t<title>Honey</title>\n");
-	echo('	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
-	<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>');
-	echo("\n");
-	echo("</head>\n");
-	echo("<body>\n");
-}
+require_once("honey.php");
 
-function honeyFooter() {
-	echo("</body>\n");
-	echo("</html>\n");
+global $webroot;
+global $blog_title;
+global $contentdir;
+
+global $honeyRoot;
+$honeyRoot = realpath(dirname(__FILE__));
+
+/*
+require_once("s3/s3.php");
+
+s3('accessKey', 'asdf');
+s3('secretKey', 'secret');
+s3('dump');
+*/
+
+if (!isset($webroot) || is_null($webroot)) {
+	$webroot = "/webroot";
 }
 
 on('GET', '/', function() {
+	global $blog_title;
+	$posts = getPostFileList();
+	$Parsedown = new Parsedown();
+	
 	honeyHeader();
-	echo("Hello world!\n");
+	honeyMenu();
+	echo('<div id="content">');
+	foreach ($posts as $post) {
+		$content = $post['data'];
+		echo('<div class="entry">');
+		echo($Parsedown->text($content));
+		echo('<div>Published by ' . $post['meta']['author_name'] . ' on ' . $post['meta']['published_date'] . '</div>');
+		echo('</div>');
+	}
+	echo('</div>');
 	honeyFooter();
 });
 
+on('GET', '/posts', function() {
+	$allPosts = getPostFileList();
+
+	$onLoad = '$(".post-item").click(function() {
+		content = $(this).data("content");
+		$("#post-preview").html(marked(content));
+		$(".post-item").removeClass("active");
+		$(this).addClass("active");
+		$("#post-edit").data("slug", $(this).data("slug"));
+	});
+	$("#post-edit").click(function() {
+		slug = $(this).data("slug");
+		//console.log("Current slug:" + slug);
+		window.location = "/posts/edit/" + slug;
+	});
+	$("#post-listing-1").click();';
+
+	honeyHeader($onLoad);
+	honeyAdminMenu();
+	$i = 1;
+	?>
+	<div id="content" class="row">
+		<div class="col-md-2">
+			<div class="panel panel-default">
+				<div class="panel-heading">Posts<a href="/posts/new"><span class="glyphicon glyphicon-plus pull-right"></span></a></div>
+				<ul class="list-group">
+				<?php foreach($allPosts as $slug => $post):
+					$search = array("\n", '"', "'");
+					$replace = array("&#10;", "&#34;", "&#39;");
+					$safe_content = str_replace($search, $replace, $post['data']);
+				?>
+					<li class="list-group-item post-item" id="post-listing-<?php echo($i++); ?>" data-slug="<?php echo($slug); ?>" data-title="<?php echo($post['meta']['title']); ?>" data-content="<?php echo($safe_content); ?>">
+						<h4 class="list-group-item-heading"><?php echo($post['meta']['title']); ?></h4>
+					    <p class="list-group-item-text">&nbsp;<small class="pull-right"><?php echo($post['meta']['published_date']); ?></small></p>
+					</li>
+				<?php endforeach; ?>
+				</ul>
+			</div>
+		</div>
+		<div class="col-md-10">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					Preview
+					<span class="pull-right">
+						<span class="glyphicon glyphicon-pencil post-action" id="post-edit"></span>
+						<span class="glyphicon glyphicon-trash post-action"></span>
+						<span class="glyphicon glyphicon-cog post-action"></span>
+					</span>
+				</div>
+				<div id="post-preview" class="panel-body"></div>
+			</div>
+		</div>
+	</div>
+	<?php
+	//echo("<pre>" . print_r($allPosts, true) . "</pre>");
+	honeyFooter();
+});
+
+on('POST', '/editor/update', function() {
+	honeyHeader();
+	echo("<h1>Blog post</h1>\n");
+
+	$Parsedown = new Parsedown();
+	$content = params('content');
+	$htmlContent = $Parsedown->text($content);
+
+	echo('<div class="content">' . $htmlContent . '</div>');
+	honeyFooter();
+});
+
+
+on('GET', '/post/:slug', function($slug) {
+	$data = honeyGetPost($slug);
+	if ($data == null) {
+		error('404', 'Page not found');
+		return;
+	}
+
+	honeyHeader();
+	honeyMenu();
+	echo('<div id="contents">');
+
+	$Parsedown = new Parsedown();
+	$htmlContent = $Parsedown->text($data['data']);
+	echo($htmlContent);
+
+	echo('</div>');
+	honeyFooter();
+});
+
+on('POST', '/posts/save', function() {
+	global $contentdir;
+	
+	$title = null;
+	$content = params('content');
+	$meta = array();
+
+	// Setup our title
+	$line = strtok($content, "\n");
+	while ($line != '' && $title == null) {
+		if ($line[0] == '#')
+			$title = $line;
+
+		$line = strtok("\n");
+	}
+	if ($title == null) {
+		$title = strtok($content, "\n");
+	}
+
+	$title = trim($title);
+	if ($title == '') $title = null;
+	if ($title != null) {
+		// Cleanup
+		$title = preg_replace("/^ *\#* *(.*)/","$1", $title);
+	}
+
+	if (params('slug') == '') {
+		if ($title == null) {
+			// TODO: Properly handle this
+			die("Invalid post!");
+		}
+	}
+
+	// Setup some metadata
+	if (params('slug') == '') {
+
+		// create a filename
+		$filename = str_replace(" ", "-", strtolower($title));
+		$fn = $filename;
+		$i = 1;
+
+		// Check for a suitable filename
+		while (file_exists($contentdir . '/' . $fn . '.md')) {
+			$fn = $filename . '-' . $i++;
+		}
+
+		$meta['published_date'] = date(DATE_ATOM);
+		$meta['title'] = $title;
+	}
+	else {
+		$fn = params('slug');
+		$post = honeyGetPost($fn);
+		$meta = $post['meta'];
+		$meta['updated_date'] = date(DATE_ATOM);
+
+		if ($title != null)
+			$meta['title'] = $title;
+	}
+
+	// Save our post
+	file_put_contents($contentdir . '/' . $fn . '.md', $content);
+	file_put_contents($contentdir . '/' . $fn . '.meta', json_encode($meta));
+
+	redirect("/posts");
+	// echo("Saved to ". $contentdir . '/' . $fn . '.md');
+});
+
+on('GET', '/posts/edit/:slug', function($slug) {
+	$data = honeyGetPost($slug);
+	honeyEditor($data['data'], $slug);
+});
+
+on('GET', '/posts/new', function() {
+	honeyEditor();
+});
+
+
+// All done. Let's load honey up!
 dispatch();
