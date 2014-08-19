@@ -77,7 +77,7 @@ on('GET', '/posts', function() {
 	});
 	$("#post-listing-1").click();';
 
-	honeyHeader($onLoad);
+	honeyHeader($onLoad, true);
 	honeyAdminMenu();
 	$i = 1;
 	?>

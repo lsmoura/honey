@@ -164,10 +164,41 @@ function honeyHeader($onload = '', $admin = false) {
 		.honey-footer p:last-child {
 			margin-bottom: 0;
 		}
+
+		body.admin .honey-head {
+  			background-color: #000;
+  			-webkit-box-shadow: inset 0 -2px 5px rgba(0,0,0,.1);
+			box-shadow: inset 0 -2px 5px rgba(0,0,0,.1);
+			margin-bottom: 1em;
+		}
+
+		.honey-nav h1 {
+			margin: 0;
+			display: inline-block;
+			font-size: large;
+			color: #888;
+			margin-right: 1em;
+		}
+
+		body.admin .honey-nav a {
+			position: relative;
+			display: inline-block;
+			padding: 10px;
+			font-weight: 500;
+			color: #e9e9e9;
+		}
+		body.admin .honey-nav a:hover,
+		body.admin .honey-nav a:focus {
+			color: #fff;
+			text-decoration: none;
+		}
 	</style>
 	</head>
-	<body<?php if($admin == true) echo(' class="admin"'); ?>>
-	<?php
+	<?php if($admin == true): ?>
+		<body class="admin">
+	<?php else: ?>
+		<body>
+	<?php endif;
 }
 
 // Retrieve the site footer
@@ -185,19 +216,21 @@ function honeyFooter() {
 // Admin menu
 function honeyAdminMenu() {
 	?>
-	<nav class="navbar navbar-default" role="navigation">
+	<div class="honey-head">
 		<div class="container-fluid">
-			<ul class="nav navbar-nav">
-				<li><a href="/">Your Blog</a></li>
-				<li><a href="/posts">Content</a></li>
-				<li><a href="#">Gallery</a></li>
+			<nav class="honey-nav">
+				<h1>Honey</h1>
+				<a href="/"><span class="glyphicon glyphicon-home"></span> Your Blog</a>
+				<a href="/posts"><span class="glyphicon glyphicon-edit"></span> Content</a>
+				<a href="#"><span class="glyphicon glyphicon-picture"></span> Gallery</a>
+				<span class="pull-right">
+					<a href="#"><span class="glyphicon glyphicon-cog"></span></a>
+					<a href="/logout"><span class="glyphicon glyphicon-log-out"></span></a>
+				</span>
 			</ul>
-			<ul class="nav navbar-nav navbar-right">
-				<li><a href="#">Settings</a></li>
-				<li><a href="#">Log Out</a></li>
-			</ul>
+			</nav>
 		</div>
-	</nav>
+	</div>
 	<?php
 }
 
