@@ -1,3 +1,9 @@
 [submodule "dispatch"]
 	path = dispatch
 	url = https://github.com/noodlehaus/dispatch.git
+[submodule "marked"]
+	path = marked
+	url = https://github.com/chjj/marked.git
+[submodule "parsedown"]
+	path = parsedown
+	url = https://github.com/erusev/parsedown.git
