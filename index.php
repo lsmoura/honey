@@ -49,11 +49,11 @@ on('GET', '/', function() {
 	honeyHeader();
 	honeyMenu();
 	echo('<div class="container-fluid">');
-	foreach ($posts as $post) {
+	foreach ($posts as $slug => $post) {
 		$content = $post['data'];
 		echo('<div class="entry">');
 		echo($Parsedown->text($content));
-		echo('<div>Published by ' . $post['meta']['author_name'] . ' on ' . $post['meta']['published_date'] . '</div>');
+		echo('<div>Published by ' . $post['meta']['author_name'] . ' on <a href="/post/' . $slug . '">' . $post['meta']['published_date'] . '</a></div>');
 		echo('</div>');
 	}
 	echo('</div>');
@@ -154,6 +154,7 @@ on('GET', '/post/:slug', function($slug) {
 
 on('POST', '/posts/save', function() {
 	global $contentdir;
+	global $honeyRoot;
 	
 	$title = null;
 	$content = params('content');
@@ -194,7 +195,7 @@ on('POST', '/posts/save', function() {
 		$i = 1;
 
 		// Check for a suitable filename
-		while (file_exists($contentdir . '/' . $fn . '.md')) {
+		while (file_exists($honeyRoot . '/' . $contentdir . '/' . $fn . '.md')) {
 			$fn = $filename . '-' . $i++;
 		}
 
@@ -212,8 +213,8 @@ on('POST', '/posts/save', function() {
 	}
 
 	// Save our post
-	file_put_contents($contentdir . '/' . $fn . '.md', $content);
-	file_put_contents($contentdir . '/' . $fn . '.meta', json_encode($meta));
+	file_put_contents($honeyRoot . '/' . $contentdir . '/' . $fn . '.md', $content);
+	file_put_contents($honeyRoot . '/' . $contentdir . '/' . $fn . '.meta', json_encode($meta));
 
 	redirect("/posts");
 	// echo("Saved to ". $contentdir . '/' . $fn . '.md');
