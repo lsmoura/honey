@@ -110,15 +110,16 @@ function getFullUrl($url) {
 	global $webroot;
 	$ret = $url;
 
-	if ($url[0] != '/') {
-		$ret = $webroot . "/" . $url;
+	if ($url[0] == '/') {
+		if ($webroot != '.')
+			$ret = $webroot . "/" . $url;
 	}
 
 	return($ret);
 }
 
 // Retrieve the header of the site
-function honeyHeader($onload = '') {
+function honeyHeader($onload = '', $admin = false) {
 	$stylesheets = array('/bootstrap/bootstrap.min.css', '/bootstrap/bootstrap-theme.min.css');
 	$scripts = array('/js/jquery-2.1.1.min.js', '/bootstrap/bootstrap.min.js');
 
@@ -152,19 +153,33 @@ function honeyHeader($onload = '') {
 		.post-action:hover {
 			color: #00f;
 		}
+
+		.honey-footer {
+			border-top: 1px solid #eee;
+			padding: 20px 0;
+			color: #898989;
+			text-align: center;
+			background-color: #f9f9f9;
+		}
+		.honey-footer p:last-child {
+			margin-bottom: 0;
+		}
 	</style>
-	<?php
-	echo("</head>\n");
-	echo("<body>\n");
-	?>
-	<div></div>
+	</head>
+	<body<?php if($admin == true) echo(' class="admin"'); ?>>
 	<?php
 }
 
 // Retrieve the site footer
 function honeyFooter() {
-	echo("</body>\n");
-	echo("</html>\n");
+	?>
+    <div class="honey-footer">
+		<p>The Honey blog platform by <a href="https://twitter.com/lsmoura">@lsmoura</a>.</p>
+		<p><a href="#">Back to top</a></p>
+    </div>
+    </body>
+    </html>
+    <?php
 }
 
 // Admin menu
@@ -211,7 +226,7 @@ function honeyEditor($content = null, $slug = null) {
 	});
 	$('#preview').html(marked($('#editor textarea').text()));";
 
-	honeyHeader($onLoad);
+	honeyHeader($onLoad, true);
 	honeyAdminMenu();
 	echo('<div class="container-fluid">');
 	echo("<h1>Editor</h1>\n");
