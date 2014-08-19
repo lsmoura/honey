@@ -175,8 +175,8 @@ function honeyAdminMenu() {
 	<nav class="navbar navbar-default" role="navigation">
 		<div class="container-fluid">
 			<ul class="nav navbar-nav">
-				<li><a href="#">Your Blog</a></li>
-				<li><a href="#">Content</a></li>
+				<li><a href="/">Your Blog</a></li>
+				<li><a href="/posts">Content</a></li>
 				<li><a href="#">Gallery</a></li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
