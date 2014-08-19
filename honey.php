@@ -213,6 +213,7 @@ function honeyEditor($content = null, $slug = null) {
 
 	honeyHeader($onLoad);
 	honeyAdminMenu();
+	echo('<div class="container-fluid">');
 	echo("<h1>Editor</h1>\n");
 	echo('<form method="post" action="/posts/save">');
 	if ($slug != null) {
@@ -231,5 +232,6 @@ function honeyEditor($content = null, $slug = null) {
 	echo('</div>');
 	echo('</div>');
 	echo('</form>');
+	echo("<div>");	
 	honeyFooter();	
 }

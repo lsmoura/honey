@@ -48,7 +48,7 @@ on('GET', '/', function() {
 	
 	honeyHeader();
 	honeyMenu();
-	echo('<div id="content">');
+	echo('<div class="container-fluid">');
 	foreach ($posts as $post) {
 		$content = $post['data'];
 		echo('<div class="entry">');
@@ -81,6 +81,7 @@ on('GET', '/posts', function() {
 	honeyAdminMenu();
 	$i = 1;
 	?>
+	<div class="container-fluid">
 	<div id="content" class="row">
 		<div class="col-md-2">
 			<div class="panel panel-default">
@@ -113,6 +114,7 @@ on('GET', '/posts', function() {
 			</div>
 		</div>
 	</div>
+	</div>
 	<?php
 	//echo("<pre>" . print_r($allPosts, true) . "</pre>");
 	honeyFooter();
@@ -140,7 +142,7 @@ on('GET', '/post/:slug', function($slug) {
 
 	honeyHeader();
 	honeyMenu();
-	echo('<div id="contents">');
+	echo('<div class="container-fluid">');
 
 	$Parsedown = new Parsedown();
 	$htmlContent = $Parsedown->text($data['data']);
