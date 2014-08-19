@@ -119,13 +119,11 @@ function getFullUrl($url) {
 
 // Retrieve the header of the site
 function honeyHeader($onload = '') {
-	global $webroot;
-
-	$stylesheets = array('bootstrap/bootstrap.min.css', 'bootstrap/bootstrap-theme.min.css');
-	$scripts = array('js/jquery-2.1.1.min.js', 'bootstrap/bootstrap.min.js');
+	$stylesheets = array('/bootstrap/bootstrap.min.css', '/bootstrap/bootstrap-theme.min.css');
+	$scripts = array('/js/jquery-2.1.1.min.js', '/bootstrap/bootstrap.min.js');
 
 	// Marked
-	$scripts[] = 'js/marked.min.js';
+	$scripts[] = '/js/marked.min.js';
 
 	echo("<!doctype html>\n<html lang=\"en\">\n<head>\n");
 	echo("\t<meta charset=\"utf-8\">\n");
