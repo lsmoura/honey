@@ -152,6 +152,18 @@ on('GET', '/post/:slug', function($slug) {
 	honeyFooter();
 });
 
+function honeyTitleCleanup($val) {
+	$ret = $val;
+
+	$ret = preg_replace("/^ *\#* *(.*)/","$1", $ret);
+	$ret = trim($ret);
+
+	if ($ret == '')
+		$ret = null;
+
+	return($ret);
+}
+
 on('POST', '/posts/save', function() {
 	global $contentdir;
 	global $honeyRoot;
@@ -163,20 +175,14 @@ on('POST', '/posts/save', function() {
 	// Setup our title
 	$line = strtok($content, "\n");
 	while ($line != '' && $title == null) {
-		if ($line[0] == '#')
-			$title = $line;
+		if ($line[0] == '#') {
+			$title = honeyTitleCleanup($line);
+		}
 
 		$line = strtok("\n");
 	}
 	if ($title == null) {
-		$title = strtok($content, "\n");
-	}
-
-	$title = trim($title);
-	if ($title == '') $title = null;
-	if ($title != null) {
-		// Cleanup
-		$title = preg_replace("/^ *\#* *(.*)/","$1", $title);
+		$title = honeyTitleCleanup(strtok($content, "\n"));
 	}
 
 	if (params('slug') == '') {
