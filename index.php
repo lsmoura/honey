@@ -152,18 +152,6 @@ on('GET', '/post/:slug', function($slug) {
 	honeyFooter();
 });
 
-function honeyTitleCleanup($val) {
-	$ret = $val;
-
-	$ret = preg_replace("/^ *\#* *(.*)/","$1", $ret);
-	$ret = trim($ret);
-
-	if ($ret == '')
-		$ret = null;
-
-	return($ret);
-}
-
 on('POST', '/posts/save', function() {
 	global $contentdir;
 	global $honeyRoot;
@@ -196,7 +184,7 @@ on('POST', '/posts/save', function() {
 	if (params('slug') == '') {
 
 		// create a filename
-		$filename = str_replace(" ", "-", strtolower($title));
+		$filename = honeyFilenameFromTitle($title);
 		$fn = $filename;
 		$i = 1;
 

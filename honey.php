@@ -283,3 +283,25 @@ function honeyEditor($content = null, $slug = null) {
 	echo("<div>");	
 	honeyFooter();	
 }
+
+function honeyTitleCleanup($val) {
+	$ret = $val;
+
+	$ret = preg_replace("/^ *\#* *(.*)/","$1", $ret);
+	$ret = trim($ret);
+
+	if ($ret == '')
+		$ret = null;
+
+	return($ret);
+}
+
+function honeyFilenameFromTitle($title) {
+	$ret = strtolower($title);
+
+	$list = array(" ", '.', '/', '\\', '!', '?', '^', '&', ',', '%', '$');
+	$ret = str_replace($list, "-", $ret);
+	$ret = preg_replace("([^\w\s\d\-_~,;:\[\]\(\].]|[\.]{2,})", '', $ret);	// Source: http://stackoverflow.com/a/2021729/488212
+
+	return($ret);
+}
