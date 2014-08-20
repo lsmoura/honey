@@ -192,6 +192,10 @@ function honeyHeader($onload = '', $admin = false) {
 			color: #fff;
 			text-decoration: none;
 		}
+
+		.container img, .container-fluid img {
+			max-width: 100%;
+		}
 	</style>
 	</head>
 	<?php if($admin == true): ?>
