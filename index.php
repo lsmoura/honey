@@ -189,7 +189,7 @@ on('POST', '/posts/save', function() {
 		$i = 1;
 
 		// Check for a suitable filename
-		while (file_exists($honeyRoot . '/' . $contentdir . '/' . $fn . '.md')) {
+		while (file_exists($honeyRoot . '/' . $contentdir . '/' . $fn . '.markdown')) {
 			$fn = $filename . '-' . $i++;
 		}
 
@@ -207,11 +207,10 @@ on('POST', '/posts/save', function() {
 	}
 
 	// Save our post
-	file_put_contents($honeyRoot . '/' . $contentdir . '/' . $fn . '.md', $content);
+	file_put_contents($honeyRoot . '/' . $contentdir . '/' . $fn . '.markdown', $content);
 	file_put_contents($honeyRoot . '/' . $contentdir . '/' . $fn . '.meta', json_encode($meta));
 
 	redirect("/posts");
-	// echo("Saved to ". $contentdir . '/' . $fn . '.md');
 });
 
 on('GET', '/posts/edit/:slug', function($slug) {

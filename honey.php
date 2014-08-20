@@ -57,7 +57,7 @@ function getPostFileList() {
 		if (!array_key_exists($name, $entries)) {
 			$entries[$name] = array('source' => '', 'data' => '', 'meta' => array('title' => ''));
 		}
-		if ($ext == 'md') {
+		if ($ext == 'markdown') {
 			$entries[$name]['source'] = $file;
 			$entries[$name]['data'] = $data;
 		}
@@ -86,14 +86,14 @@ function honeyGetPost($slug) {
 	global $honeyRoot;
 	global $contentdir;
 
-	$filename = $honeyRoot . '/' . $contentdir . '/' . $slug . '.md';
+	$filename = $honeyRoot . '/' . $contentdir . '/' . $slug . '.markdown';
 
 	if (file_exists($filename) == false) {
 		return(null);
 	}
 
 	$ret = array();
-	$ret['source'] = $slug . '.md';
+	$ret['source'] = $slug . '.markdown';
 	$ret['data'] = file_get_contents($filename);
 
 	$meta_fn = $contentdir . '/' . $slug . '.meta';
