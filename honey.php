@@ -126,6 +126,11 @@ function honeyHeader($onload = '', $admin = false) {
 	// Marked
 	$scripts[] = '/js/marked.min.js';
 
+	// Honey stylesheets
+	$stylesheets[] = '/css/honey.css';
+	if ($admin)
+		$stylesheets[] = '/css/admin.css';
+
 	echo("<!doctype html>\n<html lang=\"en\">\n<head>\n");
 	echo("\t<meta charset=\"utf-8\">\n");
 	echo("\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n");
@@ -142,61 +147,6 @@ function honeyHeader($onload = '', $admin = false) {
 	}
 	echo("\n");
 	?>
-	<style>
-		.post-item {
-			cursor: pointer;
-		}
-		.post-action {
-			padding: 0 4px;
-			cursor: pointer;
-		}
-		.post-action:hover {
-			color: #00f;
-		}
-
-		.honey-footer {
-			border-top: 1px solid #eee;
-			padding: 20px 0;
-			color: #898989;
-			text-align: center;
-			background-color: #f9f9f9;
-		}
-		.honey-footer p:last-child {
-			margin-bottom: 0;
-		}
-
-		body.admin .honey-head {
-  			background-color: #000;
-  			-webkit-box-shadow: inset 0 -2px 5px rgba(0,0,0,.1);
-			box-shadow: inset 0 -2px 5px rgba(0,0,0,.1);
-			margin-bottom: 1em;
-		}
-
-		.honey-nav h1 {
-			margin: 0;
-			display: inline-block;
-			font-size: large;
-			color: #888;
-			margin-right: 1em;
-		}
-
-		body.admin .honey-nav a {
-			position: relative;
-			display: inline-block;
-			padding: 10px;
-			font-weight: 500;
-			color: #e9e9e9;
-		}
-		body.admin .honey-nav a:hover,
-		body.admin .honey-nav a:focus {
-			color: #fff;
-			text-decoration: none;
-		}
-
-		.container img, .container-fluid img {
-			max-width: 100%;
-		}
-	</style>
 	</head>
 	<?php if($admin == true): ?>
 		<body class="admin">
