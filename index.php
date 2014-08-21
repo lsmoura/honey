@@ -48,13 +48,20 @@ on('GET', '/', function() {
 	
 	honeyHeader();
 	honeyMenu();
-	echo('<div class="container-fluid">');
+	echo('<div class="container">');
 	foreach ($posts as $slug => $post) {
 		$content = $post['data'];
-		echo('<div class="entry">');
-		echo($Parsedown->text($content));
-		echo('<div>Published by ' . $post['meta']['author_name'] . ' on <a href="/post/' . $slug . '">' . $post['meta']['published_date'] . '</a></div>');
-		echo('</div>');
+
+		$contents = $Parsedown->text($content);
+		$contents = preg_replace('/<h[1-6]>.*?<\/h[1-6]>/', '', $contents, 1);
+
+		echo('<div class="blog-entry">');
+		echo('<h1 class="blog-entry-title">' . $post['meta']['title'] . '</h1>');
+		echo('<p class="blog-entry-meta">Published by ' . $post['meta']['author_name'] . ' on <a href="/post/' . $slug . '">' . $post['meta']['published_date'] . '</a></p>');
+		echo('<div class="blog-contents">');
+		echo($contents);
+		echo('</div>');	// blog-contents
+		echo('</div>');	// blog-entry
 	}
 	echo('</div>');
 	honeyFooter();

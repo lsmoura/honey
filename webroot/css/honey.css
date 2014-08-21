@@ -16,6 +16,35 @@ misrepresented as being the original software.
 3. This notice may not be removed or altered from any source distribution.
 */
 
+/* Globals */
+body {
+	font-family: Georgia, "Times New Roman", Times, serif;
+	color: #555;
+}
+
+h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6 {
+	margin-top: 0;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-weight: normal;
+	color: #333;
+}
+
+/* === */
+
+.blog-entry {
+	margin-bottom: 60px;
+}
+
+.blog-entry h1 {
+	margin-bottom: 5px;
+	font-size: 40px;
+}
+.blog-entry-meta {
+	margin-bottom: 20px;
+	color: #999;
+}
+
+/* == */
 .post-item {
 	cursor: pointer;
 }
