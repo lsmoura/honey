@@ -22,10 +22,12 @@ freely, subject to the following restrictions:
 // TODO: Move these to their own variable and file.
 global $webroot;
 global $blog_title;
+global $blog_slogan;
 global $sitedir;
 
 $sitedir = "site";
 $blog_title = 'Honey';
+$blog_slogan = 'Lightweight, database-free blogging platform.';
 
 // Compare function for sorting posts
 function __honeyPostCmp($a, $b) {

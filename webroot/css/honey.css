@@ -31,6 +31,21 @@ h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6 {
 
 /* === */
 
+.blog-header {
+	padding-top: 20px 0;
+}
+
+.blog-title {
+	margin-top: 30px;
+	margin-bottom: 0;
+	font-size: 60px;
+	font-weight: bold;
+}
+.blog-description {
+	font-size: 20px;
+	color: #999;
+}
+
 .blog-entry {
 	margin-bottom: 60px;
 }

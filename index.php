@@ -24,6 +24,7 @@ require_once("honey.php");
 
 global $webroot;
 global $blog_title;
+global $blog_slogan;
 global $sitedir;
 
 global $honeyRoot;
@@ -43,12 +44,18 @@ if (!isset($webroot) || is_null($webroot)) {
 
 on('GET', '/', function() {
 	global $blog_title;
+	global $blog_slogan;
+
 	$posts = getPostFileList();
 	$Parsedown = new Parsedown();
 	
 	honeyHeader();
 	honeyMenu();
 	echo('<div class="container">');
+	echo('<div class="blog-header">');
+	echo('<div class="blog-title">' . $blog_title . '</div>');
+	echo('<p class="lead blog-description">' . $blog_slogan . '</p>');
+	echo('</div>');
 	foreach ($posts as $slug => $post) {
 		$content = $post['data'];
 
