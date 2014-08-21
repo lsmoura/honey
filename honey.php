@@ -22,9 +22,9 @@ freely, subject to the following restrictions:
 // TODO: Move these to their own variable and file.
 global $webroot;
 global $blog_title;
-global $contentdir;
+global $sitedir;
 
-$contentdir = "content";
+$sitedir = "site";
 $blog_title = 'Honey';
 
 // Compare function for sorting posts
@@ -41,13 +41,13 @@ function __honeyPostCmp($a, $b) {
 // Get an array with all posts published
 function getPostFileList() {
 	global $honeyRoot;
-	global $contentdir;
-	$files = array_diff(scandir($honeyRoot . '/' . $contentdir), array('.', '..'));
+	global $sitedir;
+	$files = array_diff(scandir($honeyRoot . '/' . $sitedir . '/content/'), array('.', '..'));
 
 	$entries = array();
 
 	foreach($files as $file) {
-		$filename = $honeyRoot . '/' . $contentdir . '/' . $file;
+		$filename = $honeyRoot . '/' . $sitedir . '/content/' . $file;
 
 		$info = pathinfo($filename);
 		$name = $info['filename'];
@@ -84,9 +84,9 @@ function getPostFileList() {
 // Get an specific post based on the slug
 function honeyGetPost($slug) {
 	global $honeyRoot;
-	global $contentdir;
+	global $sitedir;
 
-	$filename = $honeyRoot . '/' . $contentdir . '/' . $slug . '.markdown';
+	$filename = $honeyRoot . '/' . $sitedir . '/content/' . $slug . '.markdown';
 
 	if (file_exists($filename) == false) {
 		return(null);
@@ -96,7 +96,7 @@ function honeyGetPost($slug) {
 	$ret['source'] = $slug . '.markdown';
 	$ret['data'] = file_get_contents($filename);
 
-	$meta_fn = $contentdir . '/' . $slug . '.meta';
+	$meta_fn = $sitedir . '/content/' . $slug . '.meta';
 	if (file_exists($meta_fn) == true) {
 		$contents = file_get_contents($meta_fn);
 		$ret['meta'] = json_decode($contents, true);

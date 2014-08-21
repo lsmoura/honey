@@ -24,7 +24,7 @@ require_once("honey.php");
 
 global $webroot;
 global $blog_title;
-global $contentdir;
+global $sitedir;
 
 global $honeyRoot;
 $honeyRoot = realpath(dirname(__FILE__));
@@ -153,7 +153,7 @@ on('GET', '/post/:slug', function($slug) {
 });
 
 on('POST', '/posts/save', function() {
-	global $contentdir;
+	global $sitedir;
 	global $honeyRoot;
 	
 	$title = null;
@@ -189,7 +189,7 @@ on('POST', '/posts/save', function() {
 		$i = 1;
 
 		// Check for a suitable filename
-		while (file_exists($honeyRoot . '/' . $contentdir . '/' . $fn . '.markdown')) {
+		while (file_exists($honeyRoot . '/' . $sitedir . '/content/' . $fn . '.markdown')) {
 			$fn = $filename . '-' . $i++;
 		}
 
@@ -207,8 +207,8 @@ on('POST', '/posts/save', function() {
 	}
 
 	// Save our post
-	file_put_contents($honeyRoot . '/' . $contentdir . '/' . $fn . '.markdown', $content);
-	file_put_contents($honeyRoot . '/' . $contentdir . '/' . $fn . '.meta', json_encode($meta));
+	file_put_contents($honeyRoot . '/' . $sitedir . '/content/' . $fn . '.markdown', $content);
+	file_put_contents($honeyRoot . '/' . $sitedir . '/content/' . $fn . '.meta', json_encode($meta));
 
 	redirect("/posts");
 });
