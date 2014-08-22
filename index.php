@@ -69,66 +69,6 @@ on('GET', '/', function() {
 	honeyFooter();
 });
 
-on('GET', '/admin/posts', function() {
-	$allPosts = getPostFileList();
-
-	$onLoad = '$(".post-item").click(function() {
-		content = $(this).data("content");
-		$("#post-preview").html(marked(content));
-		$(".post-item").removeClass("active");
-		$(this).addClass("active");
-		$("#post-edit").data("slug", $(this).data("slug"));
-	});
-	$("#post-edit").click(function() {
-		slug = $(this).data("slug");
-		//console.log("Current slug:" + slug);
-		window.location = "/admin/posts/edit/" + slug;
-	});
-	$("#post-listing-1").click();';
-
-	honeyHeader($onLoad, true);
-	honeyAdminMenu();
-	$i = 1;
-	?>
-	<div class="container-fluid">
-	<div id="content" class="row">
-		<div class="col-md-2">
-			<div class="panel panel-default">
-				<div class="panel-heading">Posts<a href="/admin/posts/new"><span class="glyphicon glyphicon-plus pull-right"></span></a></div>
-				<ul class="list-group">
-				<?php foreach($allPosts as $slug => $post):
-					$search = array("\n", '"', "'");
-					$replace = array("&#10;", "&#34;", "&#39;");
-					$safe_content = str_replace($search, $replace, $post['data']);
-				?>
-					<li class="list-group-item post-item" id="post-listing-<?php echo($i++); ?>" data-slug="<?php echo($slug); ?>" data-title="<?php echo($post['meta']['title']); ?>" data-content="<?php echo($safe_content); ?>">
-						<h4 class="list-group-item-heading"><?php echo($post['meta']['title']); ?></h4>
-					    <p class="list-group-item-text">&nbsp;<small class="pull-right"><?php echo($post['meta']['published_date']); ?></small></p>
-					</li>
-				<?php endforeach; ?>
-				</ul>
-			</div>
-		</div>
-		<div class="col-md-10">
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					Preview
-					<span class="pull-right">
-						<span class="glyphicon glyphicon-pencil post-action" id="post-edit"></span>
-						<span class="glyphicon glyphicon-trash post-action"></span>
-						<span class="glyphicon glyphicon-cog post-action"></span>
-					</span>
-				</div>
-				<div id="post-preview" class="panel-body"></div>
-			</div>
-		</div>
-	</div>
-	</div>
-	<?php
-	//echo("<pre>" . print_r($allPosts, true) . "</pre>");
-	honeyFooter();
-});
-
 on('POST', '/editor/update', function() {
 	honeyHeader();
 	echo("<h1>Blog post</h1>\n");
@@ -237,6 +177,68 @@ before('/^admin\//', function($method, $path) {
 
 // Admin functions
 prefix('admin', function() {
+	on('GET', '/', function() {
+		redirect('/admin/posts');
+	});
+
+	on('GET', '/posts', function() {
+		$allPosts = getPostFileList();
+
+		$onLoad = '$(".post-item").click(function() {
+			content = $(this).data("content");
+			$("#post-preview").html(marked(content));
+			$(".post-item").removeClass("active");
+			$(this).addClass("active");
+			$("#post-edit").data("slug", $(this).data("slug"));
+		});
+		$("#post-edit").click(function() {
+			slug = $(this).data("slug");
+			window.location = "/admin/posts/edit/" + slug;
+		});
+		$("#post-listing-1").click();';
+
+		honeyHeader($onLoad, true);
+		honeyAdminMenu();
+		$i = 1;
+		?>
+		<div class="container-fluid">
+		<div id="content" class="row">
+			<div class="col-md-2">
+				<div class="panel panel-default">
+					<div class="panel-heading">Posts<a href="/admin/posts/new"><span class="glyphicon glyphicon-plus pull-right"></span></a></div>
+					<ul class="list-group">
+					<?php foreach($allPosts as $slug => $post):
+						$search = array("\n", '"', "'");
+						$replace = array("&#10;", "&#34;", "&#39;");
+						$safe_content = str_replace($search, $replace, $post['data']);
+					?>
+						<li class="list-group-item post-item" id="post-listing-<?php echo($i++); ?>" data-slug="<?php echo($slug); ?>" data-title="<?php echo($post['meta']['title']); ?>" data-content="<?php echo($safe_content); ?>">
+							<h4 class="list-group-item-heading"><?php echo($post['meta']['title']); ?></h4>
+						    <p class="list-group-item-text">&nbsp;<small class="pull-right"><?php echo($post['meta']['published_date']); ?></small></p>
+						</li>
+					<?php endforeach; ?>
+					</ul>
+				</div>
+			</div>
+			<div class="col-md-10">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						Preview
+						<span class="pull-right">
+							<span class="glyphicon glyphicon-pencil post-action" id="post-edit"></span>
+							<span class="glyphicon glyphicon-trash post-action"></span>
+							<span class="glyphicon glyphicon-cog post-action"></span>
+						</span>
+					</div>
+					<div id="post-preview" class="panel-body"></div>
+				</div>
+			</div>
+		</div>
+		</div>
+		<?php
+		honeyFooter();
+	});
+
 	on('POST', '/posts/save', function() {
 		global $sitedir;
 		global $honeyRoot;
