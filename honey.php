@@ -21,6 +21,8 @@ freely, subject to the following restrictions:
 global $webroot;
 global $sitedir;
 
+require_once("php-markdown/Michelf/Markdown.inc.php");
+
 config('honey.salt', 'ada15bd1a5ddf0b790ae1dcfd05a1e70');
 
 $sitedir = "site";
@@ -261,6 +263,9 @@ function honeyHeader($onload = '', $admin = false) {
 	// Marked
 	$scripts[] = '/js/marked.min.js';
 
+	// Honey stuff
+	$scripts[] = '/js/honey.js';
+
 	// Honey stylesheets
 	$stylesheets[] = '/css/honey.css';
 	if ($admin)
@@ -394,4 +399,10 @@ function honeyFilenameFromTitle($title) {
 	$ret = preg_replace("([^\w\s\d\-_~,;:\[\]\(\].]|[\.]{2,})", '', $ret);	// Source: http://stackoverflow.com/a/2021729/488212
 
 	return($ret);
+}
+
+function honeyMarkdown($text) {
+	$html = \Michelf\Markdown::defaultTransform($text);
+
+	return($html);
 }
