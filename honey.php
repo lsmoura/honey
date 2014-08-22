@@ -18,8 +18,6 @@ freely, subject to the following restrictions:
 */
 
 // Some defaults
-
-// TODO: Move these to their own variable and file.
 global $webroot;
 global $sitedir;
 

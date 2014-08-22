@@ -161,76 +161,7 @@ on('GET', '/post/:slug', function($slug) {
 	honeyFooter();
 });
 
-on('POST', '/admin/posts/save', function() {
-	global $sitedir;
-	global $honeyRoot;
-	
-	$title = null;
-	$content = params('content');
-	$meta = array();
-
-	// Setup our title
-	$line = strtok($content, "\n");
-	while ($line != '' && $title == null) {
-		if ($line[0] == '#') {
-			$title = honeyTitleCleanup($line);
-		}
-
-		$line = strtok("\n");
-	}
-	if ($title == null) {
-		$title = honeyTitleCleanup(strtok($content, "\n"));
-	}
-
-	if (params('slug') == '') {
-		if ($title == null) {
-			// TODO: Properly handle this
-			die("Invalid post!");
-		}
-	}
-
-	// Setup some metadata
-	if (params('slug') == '') {
-
-		// create a filename
-		$filename = honeyFilenameFromTitle($title);
-		$fn = $filename;
-		$i = 1;
-
-		// Check for a suitable filename
-		while (file_exists($honeyRoot . '/' . $sitedir . '/content/' . $fn . '.markdown')) {
-			$fn = $filename . '-' . $i++;
-		}
-
-		$meta['published_date'] = date(DATE_ATOM);
-		$meta['title'] = $title;
-	}
-	else {
-		$fn = params('slug');
-		$post = honeyGetPost($fn);
-		$meta = $post['meta'];
-		$meta['updated_date'] = date(DATE_ATOM);
-
-		if ($title != null)
-			$meta['title'] = $title;
-	}
-
-	// Save our post
-	file_put_contents($honeyRoot . '/' . $sitedir . '/content/' . $fn . '.markdown', $content);
-	file_put_contents($honeyRoot . '/' . $sitedir . '/content/' . $fn . '.meta', json_encode($meta));
-
-	redirect("/posts");
-});
-
-on('GET', '/admin/posts/edit/:slug', function($slug) {
-	$data = honeyGetPost($slug);
-	honeyEditor($data['data'], $slug);
-});
-
-on('GET', '/admin/posts/new', function() {
-	honeyEditor();
-});
-
+// Login/logout procedures
 on('GET', '/login', function() {
 	$auth = cookie('honey');
 	
@@ -277,6 +208,9 @@ on('GET', '/logout', function() {
 	redirect('/');
 });
 
+// === Admin route ===
+
+// Admin security check
 before('/^admin\//', function($method, $path) {
 	if (honeyPassword('has') == false) {
 		if ($path == 'admin/password') {
@@ -301,81 +235,152 @@ before('/^admin\//', function($method, $path) {
 	return;
 });
 
-on('GET', '/admin/settings', function(){
-	honeyHeader(null, true);
-	honeyAdminMenu();
-	?>
-	<div class="container"><form method="post" action="/admin/settings" role="form">
-		<div class="form-group">
-			<label for="sitename">Site name</label>
-			<input id="sitename" name="sitename" type="text" placeholder="blog name" class="form-control" value="<?php echo(honeyGetConfig('sitename')) ?>" />
-		</div>
-		<div class="form-group">
-			<label form="siteslogan">Slogan</label>
-			<input id="siteslogan" name="siteslogan" type="text" placeholder="your slogan here" class="form-control" value="<?php echo(honeyGetConfig('siteslogan')) ?>" />
-		</div>
-		<button type="submit" class="btn btn-default">Save</button>
-	</form></div>
-	<?php
-	honeyFooter();
+// Admin functions
+prefix('admin', function() {
+	on('POST', '/posts/save', function() {
+		global $sitedir;
+		global $honeyRoot;
+		
+		$title = null;
+		$content = params('content');
+		$meta = array();
+
+		// Setup our title
+		$line = strtok($content, "\n");
+		while ($line != '' && $title == null) {
+			if ($line[0] == '#') {
+				$title = honeyTitleCleanup($line);
+			}
+
+			$line = strtok("\n");
+		}
+		if ($title == null) {
+			$title = honeyTitleCleanup(strtok($content, "\n"));
+		}
+
+		if (params('slug') == '') {
+			if ($title == null) {
+				// TODO: Properly handle this
+				die("Invalid post!");
+			}
+		}
+
+		// Setup some metadata
+		if (params('slug') == '') {
+
+			// create a filename
+			$filename = honeyFilenameFromTitle($title);
+			$fn = $filename;
+			$i = 1;
+
+			// Check for a suitable filename
+			while (file_exists($honeyRoot . '/' . $sitedir . '/content/' . $fn . '.markdown')) {
+				$fn = $filename . '-' . $i++;
+			}
+
+			$meta['published_date'] = date(DATE_ATOM);
+			$meta['title'] = $title;
+		}
+		else {
+			$fn = params('slug');
+			$post = honeyGetPost($fn);
+			$meta = $post['meta'];
+			$meta['updated_date'] = date(DATE_ATOM);
+
+			if ($title != null)
+				$meta['title'] = $title;
+		}
+
+		// Save our post
+		file_put_contents($honeyRoot . '/' . $sitedir . '/content/' . $fn . '.markdown', $content);
+		file_put_contents($honeyRoot . '/' . $sitedir . '/content/' . $fn . '.meta', json_encode($meta));
+
+		redirect("/posts");
+	});
+
+	on('GET', '/posts/edit/:slug', function($slug) {
+		$data = honeyGetPost($slug);
+		honeyEditor($data['data'], $slug);
+	});
+
+	on('GET', '/posts/new', function() {
+		honeyEditor();
+	});
+
+	on('GET', '/settings', function(){
+		honeyHeader(null, true);
+		honeyAdminMenu();
+		?>
+		<div class="container"><form method="post" action="/admin/settings" role="form">
+			<div class="form-group">
+				<label for="sitename">Site name</label>
+				<input id="sitename" name="sitename" type="text" placeholder="blog name" class="form-control" value="<?php echo(honeyGetConfig('sitename')) ?>" />
+			</div>
+			<div class="form-group">
+				<label form="siteslogan">Slogan</label>
+				<input id="siteslogan" name="siteslogan" type="text" placeholder="your slogan here" class="form-control" value="<?php echo(honeyGetConfig('siteslogan')) ?>" />
+			</div>
+			<button type="submit" class="btn btn-default">Save</button>
+		</form></div>
+		<?php
+		honeyFooter();
+	});
+
+	on('POST', '/settings', function() {
+		honeySetConfig('sitename', params('sitename'));
+		honeySetConfig('siteslogan', params('siteslogan'));
+		redirect('/admin/settings');
+	});
+
+	on('GET', '/password', function() {
+		honeyHeader(null, true);
+		honeyAdminMenu();
+		?>
+		<div class="container"><form method="post" action="/admin/password" role="form">
+			<div class="form-group">
+				<label for="password1">Password</label>
+				<input type="password" id="password1" name="password1" type="text" placeholder="password" class="form-control" />
+				<span class="help-block"><?php echo(flash('message')); ?></span>
+			</div>
+			<div class="form-group">
+				<label form="password2">Confirm password</label>
+				<input type="password" id="password2" name="password2" type="text" placeholder="confirm your password" class="form-control" />
+			</div>
+			<button type="submit" class="btn btn-default">Save</button>
+		</form></div>
+		<?php
+		honeyFooter();
+	});
+
+	on('POST', '/password', function() {
+		$pw = params('password1');
+		if ($pw == null || $pw == '') {
+			flash('message', 'Password may not be empty');
+			redirect('/admin/password');
+			return;
+		}
+
+		if ($pw != params('password2')) {
+			flash('message', 'Passwords does not match');
+			redirect('/admin/password');
+			return;
+		}
+
+		honeyPassword('set', $pw);
+		cookie('honey', '');
+
+		redirect('/login');
+	});
+
+	on('GET', '/info', function() {
+		honeyHeader(null, true);
+		honeyAdminMenu();
+		?>
+		<div class="container"><pre><?php print_r($_SERVER); ?></pre></div>
+		<?php
+		honeyFooter();
+	});
 });
-
-on('POST', '/admin/settings', function() {
-	honeySetConfig('sitename', params('sitename'));
-	honeySetConfig('siteslogan', params('siteslogan'));
-	redirect('/admin/settings');
-});
-
-on('GET', '/admin/password', function() {
-	honeyHeader(null, true);
-	honeyAdminMenu();
-	?>
-	<div class="container"><form method="post" action="/admin/password" role="form">
-		<div class="form-group">
-			<label for="password1">Password</label>
-			<input type="password" id="password1" name="password1" type="text" placeholder="password" class="form-control" />
-			<span class="help-block"><?php echo(flash('message')); ?></span>
-		</div>
-		<div class="form-group">
-			<label form="password2">Confirm password</label>
-			<input type="password" id="password2" name="password2" type="text" placeholder="confirm your password" class="form-control" />
-		</div>
-		<button type="submit" class="btn btn-default">Save</button>
-	</form></div>
-	<?php
-	honeyFooter();
-});
-
-on('POST', '/admin/password', function() {
-	$pw = params('password1');
-	if ($pw == null || $pw == '') {
-		flash('message', 'Password may not be empty');
-		redirect('/admin/password');
-		return;
-	}
-
-	if ($pw != params('password2')) {
-		flash('message', 'Passwords does not match');
-		redirect('/admin/password');
-		return;
-	}
-
-	honeyPassword('set', $pw);
-	cookie('honey', '');
-
-	redirect('/login');
-});
-
-on('GET', '/admin/info', function() {
-	honeyHeader(null, true);
-	honeyAdminMenu();
-	?>
-	<div class="container"><pre><?php print_r($_SERVER); ?></pre></div>
-	<?php
-	honeyFooter();
-});
-
-
 
 // All done. Let's load honey up!
 dispatch();
