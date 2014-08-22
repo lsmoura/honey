@@ -233,11 +233,10 @@ on('GET', '/admin/posts/new', function() {
 
 on('GET', '/login', function() {
 	$auth = cookie('honey');
-
-	// TODO: Add a little more security...
+	
 	if ($auth != null && !empty($auth)) {
 		// Check authentication credentials
-		if (honeyPassword('check', $auth) == true) {
+		if (honeyCheckCredentials($auth) == true) {
 			redirect('/admin/settings');
 			return;
 		}
@@ -263,9 +262,8 @@ on('GET', '/login', function() {
 });
 
 on('POST', '/login', function() {
-	$pw = md5(params('password'));
-	if (honeyPassword('check', $pw) == true) {
-		cookie('honey', $pw);
+	$pw = params('password');
+	if (honeyLogin($pw) == true) {
 		redirect('/admin/settings');
 	}
 	else {
@@ -291,10 +289,9 @@ before('/^admin\//', function($method, $path) {
 
 	// Check the credentials
 	$auth = cookie('honey');
-	// TODO: Add a little more security... (2)
 	if ($auth != null && !empty($auth)) {
 		// Check authentication credentials
-		if (honeyPassword('check', $auth) == true) {
+		if (honeyCheckCredentials($auth) == true) {
 			// All good!
 			return;
 		}
@@ -367,6 +364,15 @@ on('POST', '/admin/password', function() {
 	cookie('honey', '');
 
 	redirect('/login');
+});
+
+on('GET', '/admin/info', function() {
+	honeyHeader(null, true);
+	honeyAdminMenu();
+	?>
+	<div class="container"><pre><?php print_r($_SERVER); ?></pre></div>
+	<?php
+	honeyFooter();
 });
 
 

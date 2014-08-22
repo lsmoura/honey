@@ -23,6 +23,8 @@ freely, subject to the following restrictions:
 global $webroot;
 global $sitedir;
 
+config('honey.salt', 'ada15bd1a5ddf0b790ae1dcfd05a1e70');
+
 $sitedir = "site";
 
 // Compare function for sorting posts
@@ -156,7 +158,7 @@ function __honeyConfig($action, $key, $param = null) {
 			if (array_key_exists('password', $honeyConfig) == false)
 				return(false);
 
-			if ($honeyConfig['password'] == $param)
+			if ($honeyConfig['password'] == md5($param))
 				return(true);
 
 			return(false);
@@ -167,6 +169,15 @@ function __honeyConfig($action, $key, $param = null) {
 					return(true);
 			}
 			return(false);
+		}
+		elseif (strtolower($key) == 'credentials') {
+			$info = $_SERVER['HTTP_USER_AGENT'];
+			$ip = ip();
+
+			$outputstring = $honeyConfig['password'] . '|' . $info . '|' . $ip . '|' . config('honey.salt');
+			$credentials = md5($outputstring);
+
+			return($credentials);
 		}
 	}
 	else {
@@ -187,6 +198,24 @@ function honeyGetConfig($key, $default = null) {
 // Honey password handler
 function honeyPassword($action, $param = null) {
 	return(__honeyConfig('password', $action, $param));
+}
+
+function honeyCheckCredentials($credentials) {
+	if (honeyPassword('credentials') == $credentials)
+		return(true);
+
+	return(false);
+}
+
+function honeyLogin($password) {
+	if (honeyPassword('check', $password) == false) {
+		return(false);
+	}
+
+	$credentials = honeyPassword('credentials');
+
+	cookie('honey', $credentials);
+	return(true);
 }
 
 // Get an specific post based on the slug
