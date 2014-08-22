@@ -82,7 +82,7 @@ on('GET', '/admin/posts', function() {
 	$("#post-edit").click(function() {
 		slug = $(this).data("slug");
 		//console.log("Current slug:" + slug);
-		window.location = "/posts/edit/" + slug;
+		window.location = "/admin/posts/edit/" + slug;
 	});
 	$("#post-listing-1").click();';
 
@@ -94,7 +94,7 @@ on('GET', '/admin/posts', function() {
 	<div id="content" class="row">
 		<div class="col-md-2">
 			<div class="panel panel-default">
-				<div class="panel-heading">Posts<a href="/posts/new"><span class="glyphicon glyphicon-plus pull-right"></span></a></div>
+				<div class="panel-heading">Posts<a href="/admin/posts/new"><span class="glyphicon glyphicon-plus pull-right"></span></a></div>
 				<ul class="list-group">
 				<?php foreach($allPosts as $slug => $post):
 					$search = array("\n", '"', "'");
