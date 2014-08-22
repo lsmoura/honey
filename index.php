@@ -23,8 +23,6 @@ require_once("parsedown/Parsedown.php");
 require_once("honey.php");
 
 global $webroot;
-global $blog_title;
-global $blog_slogan;
 global $sitedir;
 
 global $honeyRoot;
@@ -43,9 +41,6 @@ if (!isset($webroot) || is_null($webroot)) {
 }
 
 on('GET', '/', function() {
-	global $blog_title;
-	global $blog_slogan;
-
 	$posts = getPostFileList();
 	$Parsedown = new Parsedown();
 	
@@ -53,8 +48,8 @@ on('GET', '/', function() {
 	honeyMenu();
 	echo('<div class="container">');
 	echo('<div class="blog-header">');
-	echo('<div class="blog-title">' . $blog_title . '</div>');
-	echo('<p class="lead blog-description">' . $blog_slogan . '</p>');
+	echo('<div class="blog-title">' . honeyGetConfig('sitename') . '</div>');
+	echo('<p class="lead blog-description">' . honeyGetConfig('siteslogan') . '</p>');
 	echo('</div>');
 	foreach ($posts as $slug => $post) {
 		$content = $post['data'];
@@ -234,6 +229,31 @@ on('GET', '/posts/edit/:slug', function($slug) {
 
 on('GET', '/posts/new', function() {
 	honeyEditor();
+});
+
+on('GET', '/admin/settings', function(){
+	honeyHeader(null, true);
+	honeyAdminMenu();
+	?>
+	<div class="container"><form method="post" action="/admin/settings" role="form">
+		<div class="form-group">
+			<label for="sitename">Site name</label>
+			<input id="sitename" name="sitename" type="text" placeholder="blog name" class="form-control" value="<?php echo(honeyGetConfig('sitename')) ?>" />
+		</div>
+		<div class="form-group">
+			<label form="siteslogan">Slogan</label>
+			<input id="siteslogan" name="siteslogan" type="text" placeholder="your slogan here" class="form-control" value="<?php echo(honeyGetConfig('siteslogan')) ?>" />
+		</div>
+		<button type="submit" class="btn btn-default">Save</button>
+	</form></div>
+	<?php
+	honeyFooter();
+});
+
+on('POST', '/admin/settings', function() {
+	honeySetConfig('sitename', params('sitename'));
+	honeySetConfig('siteslogan', params('siteslogan'));
+	redirect('/admin/settings');
 });
 
 

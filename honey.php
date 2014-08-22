@@ -21,13 +21,9 @@ freely, subject to the following restrictions:
 
 // TODO: Move these to their own variable and file.
 global $webroot;
-global $blog_title;
-global $blog_slogan;
 global $sitedir;
 
 $sitedir = "site";
-$blog_title = 'Honey';
-$blog_slogan = 'Lightweight, database-free blogging platform.';
 
 // Compare function for sorting posts
 function __honeyPostCmp($a, $b) {
@@ -81,6 +77,82 @@ function getPostFileList() {
 
 	uasort($entries, '__honeyPostCmp');
 	return($entries);
+}
+
+function __honeyDefaultConfigValue($key) {
+	static $honeyDefaultValues = array(
+		'sitename' => 'Honey',
+		'siteslogan' => 'Lightweight, database-free blogging platform.',
+		'sitedir' => 'site',
+		'theme' => 'default',
+		'admin_theme' => 'default'
+	);
+
+	if (array_key_exists($key, $honeyDefaultValues))
+		return($honeyDefaultValues[$key]);
+
+	return(null);
+}
+
+function __honeyConfig($action, $key, $param) {
+	// Need to find an alternative for all these globals...
+	global $sitedir;
+	global $honeyRoot;
+
+	// Stores all our static information here
+	static $honeyConfig = null;
+
+	// If not already, reads config information from disk (if any)
+	if ($honeyConfig == null) {
+		$fn = $honeyRoot . '/' . $sitedir . '/config.meta';
+		if (file_exists($fn) == true) {
+			$data = file_get_contents($fn);
+			$honeyConfig = json_decode($data, true);
+		}
+		else {
+			$honeyConfig = array();
+		}
+	}
+
+	if (strtolower($action) == 'get') {
+		if (array_key_exists($key, $honeyConfig)) {
+			return($honeyConfig[$key]);
+		}
+		elseif ($param != null) {
+			return($param);
+		}
+		else {
+			return(__honeyDefaultConfigValue($key));
+		}
+	}
+	elseif (strtolower($action) == 'set') {
+		if ($param == null) {
+			// Delete value
+			if (array_key_exists($key, $honeyConfig)) {
+				unset($honeyConfig[$key]);
+			}
+		}
+		else {
+			$honeyConfig[$key] = $param;
+		}
+
+		// Save settings to file
+		$fn = $honeyRoot . '/' . $sitedir . '/config.meta';
+		file_put_contents($fn, json_encode($honeyConfig));
+	}
+	else {
+		die("__honeyConfig() invalid action: '$action'\n");
+	}
+}
+
+// Set a value to the config file. A "null" value will remove the item from the config file
+function honeySetConfig($key, $value = null) {
+	__honeyConfig('set', $key, $value);
+}
+
+// Get the $key value from the config file, or returns $default if not set.
+function honeyGetConfig($key, $default = null) {
+	return(__honeyConfig('get', $key, $default));
 }
 
 // Get an specific post based on the slug
@@ -197,7 +269,7 @@ function honeyMenu() {
 	<nav class="navbar navbar-default" role="navigation">
 		<div class="container-fluid">
 			<ul class="nav navbar-nav">
-				<li><a href="/"><?php echo($blog_title); ?></a></li>
+				<li><a href="/"><?php echo(honeyGetConfig('sitename')); ?></a></li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
 				<li><a href="/posts">Admin</a></li>

@@ -1,1 +1,5 @@
+# OSX Stuff
 .DS_Store
+
+# Honey auto-generated files
+site/config.meta
