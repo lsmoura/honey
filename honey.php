@@ -94,7 +94,7 @@ function __honeyDefaultConfigValue($key) {
 	return(null);
 }
 
-function __honeyConfig($action, $key, $param) {
+function __honeyConfig($action, $key, $param = null) {
 	// Need to find an alternative for all these globals...
 	global $sitedir;
 	global $honeyRoot;
