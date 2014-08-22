@@ -313,7 +313,8 @@ function honeyAdminMenu() {
 				<a href="/admin/posts"><span class="glyphicon glyphicon-edit"></span> Content</a>
 				<a href="#"><span class="glyphicon glyphicon-picture"></span> Gallery</a>
 				<span class="pull-right">
-					<a href="#"><span class="glyphicon glyphicon-cog"></span></a>
+					<a href="/admin/password"><span class="glyphicon glyphicon-lock"></span></a>
+					<a href="/admin/settings"><span class="glyphicon glyphicon-cog"></span></a>
 					<a href="/logout"><span class="glyphicon glyphicon-log-out"></span></a>
 				</span>
 			</ul>
