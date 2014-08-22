@@ -53,7 +53,7 @@ on('GET', '/', function() {
 		$content = $post['data'];
 
 		$contents = honeyMarkdown($content);
-		$contents = preg_replace('/<h[1-6]>.*?<\/h[1-6]>/', '', $contents, 1);
+		$contents = preg_replace('/<h[1-6].*>.*?<\/h[1-6]>/', '', $contents, 1);
 
 		echo('<div class="blog-entry">');
 		echo('<h1 class="blog-entry-title">' . $post['meta']['title'] . '</h1>');

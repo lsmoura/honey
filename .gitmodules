@@ -4,6 +4,6 @@
 [submodule "marked"]
 	path = marked
 	url = https://github.com/chjj/marked.git
-[submodule "php-markdown"]
-	path = php-markdown
-	url = https://github.com/michelf/php-markdown.git
+[submodule "php-marked"]
+	path = php-marked
+	url = https://github.com/breeswish/php-marked.git

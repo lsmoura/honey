@@ -21,7 +21,15 @@ freely, subject to the following restrictions:
 global $webroot;
 global $sitedir;
 
-require_once("php-markdown/Michelf/Markdown.inc.php");
+// php-marked
+require_once("php-marked/src/Marked/RegExp.php");
+require_once("php-marked/src/Marked/Utils.php");
+require_once("php-marked/src/Marked/Renderer.php");
+require_once("php-marked/src/Marked/Lexer.php");
+require_once("php-marked/src/Marked/InlineLexer.php");
+require_once("php-marked/src/Marked/Parser.php");
+require_once("php-marked/src/Marked/Marked.php");
+
 
 config('honey.salt', 'ada15bd1a5ddf0b790ae1dcfd05a1e70');
 
@@ -401,8 +409,33 @@ function honeyFilenameFromTitle($title) {
 	return($ret);
 }
 
+class myRenderer extends \Marked\Renderer {
+	public function image($href, $title, $text) {
+		global $webroot;
+
+		$imghref = "";
+		if ($webroot != null && !empty($webroot)) {
+			$imghref .= $webroot;
+		}
+
+		$imghref .= "/img/" . $href;
+
+        $out = '<img src="' . $imghref . '" alt="' . $text . '"';
+        if (strlen($title) > 0) {
+            $out .= ' title="' . $title . '"';
+        }
+        $out .= $this->options['xhtml'] ? '/>' : '>';
+        return $out;
+	}
+}
+
 function honeyMarkdown($text) {
-	$html = \Michelf\Markdown::defaultTransform($text);
+	$renderer = new myRenderer();
+	$marked = new \Marked\Marked();
+	$marked->setOptions([ 'renderer' => $renderer ]);
+
+	$html = $marked->render($text);
+
 
 	return($html);
 }
