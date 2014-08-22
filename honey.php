@@ -115,6 +115,10 @@ function __honeyConfig($action, $key, $param) {
 	}
 
 	if (strtolower($action) == 'get') {
+		// No returning password hash for anyone!
+		if ($key == 'password') {
+			return(null);
+		}
 		if (array_key_exists($key, $honeyConfig)) {
 			return($honeyConfig[$key]);
 		}
@@ -139,6 +143,31 @@ function __honeyConfig($action, $key, $param) {
 		// Save settings to file
 		$fn = $honeyRoot . '/' . $sitedir . '/config.meta';
 		file_put_contents($fn, json_encode($honeyConfig));
+	}
+	elseif (strtolower($action) == 'password') {
+		if (strtolower($key) == 'set') {
+			$honeyConfig['password'] = md5($param);
+
+			// Save settings to file
+			$fn = $honeyRoot . '/' . $sitedir . '/config.meta';
+			file_put_contents($fn, json_encode($honeyConfig));
+		}
+		elseif (strtolower($key) == 'check') {
+			if (array_key_exists('password', $honeyConfig) == false)
+				return(false);
+
+			if ($honeyConfig['password'] == $param)
+				return(true);
+
+			return(false);
+		}
+		elseif (strtolower($key) == 'has') {
+			if (array_key_exists('password', $honeyConfig)) {
+				if (!empty($honeyConfig['password']))
+					return(true);
+			}
+			return(false);
+		}
 	}
 	else {
 		die("__honeyConfig() invalid action: '$action'\n");
@@ -249,7 +278,7 @@ function honeyAdminMenu() {
 			<nav class="honey-nav">
 				<h1>Honey</h1>
 				<a href="/"><span class="glyphicon glyphicon-home"></span> Your Blog</a>
-				<a href="/posts"><span class="glyphicon glyphicon-edit"></span> Content</a>
+				<a href="/admin/posts"><span class="glyphicon glyphicon-edit"></span> Content</a>
 				<a href="#"><span class="glyphicon glyphicon-picture"></span> Gallery</a>
 				<span class="pull-right">
 					<a href="#"><span class="glyphicon glyphicon-cog"></span></a>
@@ -272,7 +301,7 @@ function honeyMenu() {
 				<li><a href="/"><?php echo(honeyGetConfig('sitename')); ?></a></li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
-				<li><a href="/posts">Admin</a></li>
+				<li><a href="/admin/posts">Admin</a></li>
 			</ul>
 		</div>
 	</nav>
@@ -291,7 +320,7 @@ function honeyEditor($content = null, $slug = null) {
 	honeyAdminMenu();
 	echo('<div class="container-fluid">');
 	echo("<h1>Editor</h1>\n");
-	echo('<form method="post" action="/posts/save">');
+	echo('<form method="post" action="/admin/posts/save">');
 	if ($slug != null) {
 		echo('<input type="hidden" name="slug" value="' . $slug . '" />');
 	}

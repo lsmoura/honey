@@ -69,7 +69,7 @@ on('GET', '/', function() {
 	honeyFooter();
 });
 
-on('GET', '/posts', function() {
+on('GET', '/admin/posts', function() {
 	$allPosts = getPostFileList();
 
 	$onLoad = '$(".post-item").click(function() {
@@ -161,7 +161,7 @@ on('GET', '/post/:slug', function($slug) {
 	honeyFooter();
 });
 
-on('POST', '/posts/save', function() {
+on('POST', '/admin/posts/save', function() {
 	global $sitedir;
 	global $honeyRoot;
 	
@@ -222,13 +222,86 @@ on('POST', '/posts/save', function() {
 	redirect("/posts");
 });
 
-on('GET', '/posts/edit/:slug', function($slug) {
+on('GET', '/admin/posts/edit/:slug', function($slug) {
 	$data = honeyGetPost($slug);
 	honeyEditor($data['data'], $slug);
 });
 
-on('GET', '/posts/new', function() {
+on('GET', '/admin/posts/new', function() {
 	honeyEditor();
+});
+
+on('GET', '/login', function() {
+	$auth = cookie('honey');
+
+	// TODO: Add a little more security...
+	if ($auth != null && !empty($auth)) {
+		// Check authentication credentials
+		if (__honeyConfig('password', 'check', $auth) == true) {
+			redirect('/admin/settings');
+			return;
+		}
+	}
+
+	honeyHeader();
+	honeyMenu();
+
+	$loginerror = flash('loginerror');
+	?>
+	<div class="container"><form method="post" action="/login" role="form">
+		<div class="form-group <?php if($loginerror == 1) echo("has-error has-feedback"); ?>">
+			<label for="password">Credentials</label>
+			<input id="password" name="password" class="form-control" type="password" placeholder="password" />
+			<?php if($loginerror == 1): ?>
+				<span class="glyphicon glyphicon-remove form-control-feedback"></span>
+			<?php endif; ?>
+		</div>
+		<button type="submit" class="btn btn-default">Login</button>
+	</form></div>
+	<?php
+	honeyFooter();
+});
+
+on('POST', '/login', function() {
+	$pw = md5(params('password'));
+	if (__honeyConfig('password', 'check', $pw) == true) {
+		cookie('honey', $pw);
+		redirect('/admin/settings');
+	}
+	else {
+		flash('loginerror', '1');
+		redirect('/login');
+	}
+});
+
+on('GET', '/logout', function() {
+	cookie('honey', '');
+	redirect('/');
+});
+
+before('/^admin\//', function($method, $path) {
+	if (__honeyConfig('password', 'has') == false) {
+		if ($path == 'admin/password') {
+			// All good!
+			return;
+		}
+		redirect('/admin/password');
+		return;
+	}
+
+	// Check the credentials
+	$auth = cookie('honey');
+	// TODO: Add a little more security... (2)
+	if ($auth != null && !empty($auth)) {
+		// Check authentication credentials
+		if (__honeyConfig('password', 'check', $auth) == true) {
+			// All good!
+			return;
+		}
+	}
+
+	redirect('/login');
+	return;
 });
 
 on('GET', '/admin/settings', function(){
@@ -255,6 +328,47 @@ on('POST', '/admin/settings', function() {
 	honeySetConfig('siteslogan', params('siteslogan'));
 	redirect('/admin/settings');
 });
+
+on('GET', '/admin/password', function() {
+	honeyHeader(null, true);
+	honeyAdminMenu();
+	?>
+	<div class="container"><form method="post" action="/admin/password" role="form">
+		<div class="form-group">
+			<label for="password1">Password</label>
+			<input type="password" id="password1" name="password1" type="text" placeholder="password" class="form-control" />
+			<span class="help-block"><?php echo(flash('message')); ?></span>
+		</div>
+		<div class="form-group">
+			<label form="password2">Confirm password</label>
+			<input type="password" id="password2" name="password2" type="text" placeholder="confirm your password" class="form-control" />
+		</div>
+		<button type="submit" class="btn btn-default">Save</button>
+	</form></div>
+	<?php
+	honeyFooter();
+});
+
+on('POST', '/admin/password', function() {
+	$pw = params('password1');
+	if ($pw == null || $pw == '') {
+		flash('message', 'Password may not be empty');
+		redirect('/admin/password');
+		return;
+	}
+
+	if ($pw != params('password2')) {
+		flash('message', 'Passwords does not match');
+		redirect('/admin/password');
+		return;
+	}
+
+	__honeyConfig('password', 'set', $pw);
+	cookie('honey', '');
+
+	redirect('/login');
+});
+
 
 
 // All done. Let's load honey up!
