@@ -184,6 +184,11 @@ function honeyGetConfig($key, $default = null) {
 	return(__honeyConfig('get', $key, $default));
 }
 
+// Honey password handler
+function honeyPassword($action, $param = null) {
+	return(__honeyConfig('password', $action, $param));
+}
+
 // Get an specific post based on the slug
 function honeyGetPost($slug) {
 	global $honeyRoot;

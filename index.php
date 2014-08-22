@@ -237,7 +237,7 @@ on('GET', '/login', function() {
 	// TODO: Add a little more security...
 	if ($auth != null && !empty($auth)) {
 		// Check authentication credentials
-		if (__honeyConfig('password', 'check', $auth) == true) {
+		if (honeyPassword('check', $auth) == true) {
 			redirect('/admin/settings');
 			return;
 		}
@@ -264,7 +264,7 @@ on('GET', '/login', function() {
 
 on('POST', '/login', function() {
 	$pw = md5(params('password'));
-	if (__honeyConfig('password', 'check', $pw) == true) {
+	if (honeyPassword('check', $pw) == true) {
 		cookie('honey', $pw);
 		redirect('/admin/settings');
 	}
@@ -280,7 +280,7 @@ on('GET', '/logout', function() {
 });
 
 before('/^admin\//', function($method, $path) {
-	if (__honeyConfig('password', 'has') == false) {
+	if (honeyPassword('has') == false) {
 		if ($path == 'admin/password') {
 			// All good!
 			return;
@@ -294,7 +294,7 @@ before('/^admin\//', function($method, $path) {
 	// TODO: Add a little more security... (2)
 	if ($auth != null && !empty($auth)) {
 		// Check authentication credentials
-		if (__honeyConfig('password', 'check', $auth) == true) {
+		if (honeyPassword('check', $auth) == true) {
 			// All good!
 			return;
 		}
@@ -363,7 +363,7 @@ on('POST', '/admin/password', function() {
 		return;
 	}
 
-	__honeyConfig('password', 'set', $pw);
+	honeyPassword('set', $pw);
 	cookie('honey', '');
 
 	redirect('/login');
