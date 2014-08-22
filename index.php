@@ -212,6 +212,7 @@ prefix('admin', function() {
 						$search = array("\n", '"', "'");
 						$replace = array("&#10;", "&#34;", "&#39;");
 						$safe_content = str_replace($search, $replace, $post['data']);
+						$safe_content = str_replace("\r", "", $safe_content);
 					?>
 						<li class="list-group-item post-item" id="post-listing-<?php echo($i++); ?>" data-slug="<?php echo($slug); ?>" data-title="<?php echo($post['meta']['title']); ?>" data-content="<?php echo($safe_content); ?>">
 							<h4 class="list-group-item-heading"><?php echo($post['meta']['title']); ?></h4>
