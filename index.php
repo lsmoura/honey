@@ -190,6 +190,7 @@ prefix('admin', function() {
 			$(".post-item").removeClass("active");
 			$(this).addClass("active");
 			$("#post-edit").data("slug", $(this).data("slug"));
+			$("#post-title").html($(this).data("title"));
 		});
 		$("#post-edit").click(function() {
 			slug = $(this).data("slug");
@@ -223,11 +224,11 @@ prefix('admin', function() {
 			<div class="col-md-10">
 				<div class="panel panel-default">
 					<div class="panel-heading">
-						Preview
+						<span id="post-title">Preview</span>
 						<span class="pull-right">
-							<span class="glyphicon glyphicon-pencil post-action" id="post-edit"></span>
-							<span class="glyphicon glyphicon-trash post-action"></span>
-							<span class="glyphicon glyphicon-cog post-action"></span>
+							<a id="post-edit" class="post-action" href="#"><span class="glyphicon glyphicon-pencil"></span></a>
+							<a id="post-trash" class="post-action" href="#"><span class="glyphicon glyphicon-trash post-action"></span></a>
+							<a id="post-settings" class="post-action" href="#"><span class="glyphicon glyphicon-cog post-action"></span></a>
 						</span>
 					</div>
 					<div id="post-preview" class="panel-body"></div>
