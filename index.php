@@ -47,9 +47,9 @@ on('GET', '/', function() {
 	$content .= '<p class="lead blog-description">' . honeyGetConfig('siteslogan') . '</p>';
 	$content .= '</div>';
 	foreach ($posts as $slug => $post) {
-		$content = $post['data'];
+		$postcontent = $post['data'];
 
-		$contents = honeyMarkdown($content);
+		$contents = honeyMarkdown($postcontent);
 		$contents = preg_replace('/<h[1-6].*>.*?<\/h[1-6]>/', '', $contents, 1);
 
 		$content .= '<div class="blog-entry">';

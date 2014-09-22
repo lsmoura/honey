@@ -4,8 +4,8 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Honey</title>
-	<?php honey_stylesheets(); ?>
-	<?php honey_javascripts(); ?>
+	<?php honey_stylesheets($stylesheets); ?>
+	<?php honey_javascript($scripts); ?>
 	<?php if (isset($onload) && $onload != null): ?>
 	<script type=\"text/javascript\">
 	//<![CDATA[
