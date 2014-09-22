@@ -81,8 +81,10 @@ on('GET', '/post/:slug', function($slug) {
 		return;
 	}
 
-	$content = honeyMarkdown($post['data']);
+	$content  = '<div class="blog-entry blog-entry-single">';
+	$content .= honeyMarkdown($post['data']);
 	$content .= '<p class="blog-entry-meta">Published by ' . $post['meta']['author_name'] . ' on <a href="/post/' . $slug . '">' . $post['meta']['published_date'] . '</a></p>';
+	$content .= '</div>';
 
 	honeyContent($content);
 });
