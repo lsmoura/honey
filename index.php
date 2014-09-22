@@ -184,11 +184,9 @@ prefix('admin', function() {
 		});
 		$("#post-listing-1").click();';
 
-		honeyHeader($onLoad, true);
-		honeyAdminMenu();
 		$i = 1;
+		ob_start();
 		?>
-		<div class="container-fluid">
 		<div id="content" class="row">
 			<div class="col-md-2">
 				<div class="panel panel-default">
@@ -222,9 +220,10 @@ prefix('admin', function() {
 				</div>
 			</div>
 		</div>
-		</div>
 		<?php
-		honeyFooter();
+		$contents = ob_get_contents();
+		ob_end_clean();
+		honeyContent($contents, $onLoad, true);
 	});
 
 	on('POST', '/posts/save', function() {
@@ -363,12 +362,7 @@ prefix('admin', function() {
 	});
 
 	on('GET', '/info', function() {
-		honeyHeader(null, true);
-		honeyAdminMenu();
-		?>
-		<div class="container"><pre><?php print_r($_SERVER); ?></pre></div>
-		<?php
-		honeyFooter();
+		honeyContent('<pre>' . print_r($_SERVER, true) . '</pre>');
 	});
 });
 

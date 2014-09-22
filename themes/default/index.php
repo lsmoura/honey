@@ -7,7 +7,7 @@
 	<?php honey_stylesheets($stylesheets); ?>
 	<?php honey_javascript($scripts); ?>
 	<?php if (isset($onload) && $onload != null): ?>
-	<script type=\"text/javascript\">
+	<script type="text/javascript">
 	//<![CDATA[
 	$(document).ready(function() {
 		<?php echo($onload); ?>
@@ -46,11 +46,13 @@
 		</div>
 	</nav>
 <?php endif; ?>
-	<div class="container">
+	<div class="container<?php if($admin == true) echo('-fluid'); ?>">
+		<?php if($admin != true): ?>
 		<div class="blog-header">
 			<div class="blog-title"><?php echo(honeyGetConfig('sitename')); ?></div>
 			<p class="lead blog-description"><?php echo(honeyGetConfig('siteslogan')); ?></p>
 		</div>
+		<?php endif; ?>
 		<?php echo($contents); ?>
 	</div>
 	<div class="honey-footer">
