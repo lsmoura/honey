@@ -304,9 +304,12 @@ function honeyHeader($onload = '', $admin = false) {
 
 	// Honey stuff
 	$scripts[] = '/js/honey.js';
+	if ($admin)
+		$scripts[] = '/js/jquery.autosize.min.js';
 
 	// Honey stylesheets
 	$stylesheets[] = '/css/honey.css';
+
 	if ($admin)
 		$stylesheets[] = '/css/admin.css';
 
@@ -391,7 +394,8 @@ function honeyEditor($content = null, $slug = null) {
 		$('#preview').html(marked(this.value));
 		//console.log(this.value);
 	});
-	$('#preview').html(marked($('#editor textarea').text()));";
+	$('#preview').html(marked($('#editor textarea').text()));
+	$('.full-height').autosize();";
 
 	honeyHeader($onLoad, true);
 	honeyAdminMenu();
@@ -402,7 +406,7 @@ function honeyEditor($content = null, $slug = null) {
 		echo('<input type="hidden" name="slug" value="' . $slug . '" />');
 	}
 	echo('<div class="row" id="editor-area">');
-	echo('<div id="editor" class="col-md-6"><textarea class="form-control" rows="10" name="content">');
+	echo('<div id="editor" class="col-md-6"><textarea class="form-control full-height" rows="10" name="content">');
 	if ($content != null) echo($content);
 	else echo("# Welcome\nWrite your new blog post using __markdown__.");
 	echo("</textarea></div>");
