@@ -253,6 +253,31 @@ function getFullUrl($url) {
 	return($ret);
 }
 
+function honey_stylesheets() {
+	/*
+	foreach ($stylesheets as $s) {
+		echo("\t" . '<link rel="stylesheet" href="' . getFullUrl($s) . '"/>' . "\n");
+	}
+	foreach ($scripts as $script) {
+		echo("\t" . '<script src="' . getFullUrl($script) . '" type="text/javascript"></script>' . "\n");
+	}
+	if ($onload != '') {
+		// CDATA, so we're XHTML compliant
+		echo("<script type=\"text/javascript\">\n//<![CDATA[\n\$(document).ready(function() { $onload });\n//]]>\n</script>");
+	}
+	echo("\n");
+	*/
+}
+
+function honey_javascript() {
+
+}
+
+function honeyContent($contents, $onload = null, $admin = false) {
+	include('themes/default/index.php');
+}
+
+
 // Retrieve the header of the site
 function honeyHeader($onload = '', $admin = false) {
 	$stylesheets = array('/bootstrap/bootstrap.min.css', '/bootstrap/bootstrap-theme.min.css');

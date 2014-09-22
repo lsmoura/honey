@@ -44,29 +44,27 @@ on('GET', '/', function() {
 	$posts = getPostFileList();
 	$Parsedown = new Parsedown();
 	
-	honeyHeader();
-	honeyMenu();
-	echo('<div class="container">');
-	echo('<div class="blog-header">');
-	echo('<div class="blog-title">' . honeyGetConfig('sitename') . '</div>');
-	echo('<p class="lead blog-description">' . honeyGetConfig('siteslogan') . '</p>');
-	echo('</div>');
+	$content  = '<div class="blog-header">';
+	$content .= '<div class="blog-title">' . honeyGetConfig('sitename') . '</div>';
+	$content .= '<p class="lead blog-description">' . honeyGetConfig('siteslogan') . '</p>';
+	$content .= '</div>';
 	foreach ($posts as $slug => $post) {
 		$content = $post['data'];
 
 		$contents = $Parsedown->text($content);
 		$contents = preg_replace('/<h[1-6]>.*?<\/h[1-6]>/', '', $contents, 1);
 
-		echo('<div class="blog-entry">');
-		echo('<h1 class="blog-entry-title">' . $post['meta']['title'] . '</h1>');
-		echo('<p class="blog-entry-meta">Published by ' . $post['meta']['author_name'] . ' on <a href="/post/' . $slug . '">' . $post['meta']['published_date'] . '</a></p>');
-		echo('<div class="blog-contents">');
-		echo($contents);
-		echo('</div>');	// blog-contents
-		echo('</div>');	// blog-entry
+		$content .= '<div class="blog-entry">';
+		$content .= '<h1 class="blog-entry-title">' . $post['meta']['title'] . '</h1>';
+		$content .= '<p class="blog-entry-meta">Published by ' . $post['meta']['author_name'] . ' on <a href="/post/' . $slug . '">' . $post['meta']['published_date'] . '</a></p>';
+		$content .= '<div class="blog-contents">';
+		$content .= $contents;
+		$content .= '</div>';	// blog-contents
+		$content .= '</div>';	// blog-entry
 	}
-	echo('</div>');
-	honeyFooter();
+	$content .= '</div>';
+
+	honeyContent($content);
 });
 
 on('POST', '/editor/update', function() {
