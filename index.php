@@ -42,13 +42,16 @@ if (!isset($webroot) || is_null($webroot)) {
 on('GET', '/', function() {
 	$posts = getPostFileList();
 	
-	$content = '';
+	ob_start();
 	foreach ($posts as $slug => $post) {
 		$postcontent = $post['data'];
 
 		$contents = honeyMarkdown($postcontent);
 		$contents = preg_replace('/<h[1-6].*>.*?<\/h[1-6]>/', '', $contents, 1);
+		$post['htmlContents'] = $contents;
 
+		include('themes/default/post.php');
+		/*
 		$content .= '<div class="blog-entry">';
 		$content .= '<h1 class="blog-entry-title">' . $post['meta']['title'] . '</h1>';
 		$content .= '<p class="blog-entry-meta">Published by ' . $post['meta']['author_name'] . ' on <a href="/post/' . $slug . '">' . $post['meta']['published_date'] . '</a></p>';
@@ -56,8 +59,10 @@ on('GET', '/', function() {
 		$content .= $contents;
 		$content .= '</div>';	// blog-contents
 		$content .= '</div>';	// blog-entry
+		*/
 	}
-	$content .= '</div>';
+	$content = ob_get_contents();
+	ob_end_clean();
 
 	honeyContent($content);
 });
@@ -81,10 +86,20 @@ on('GET', '/post/:slug', function($slug) {
 		return;
 	}
 
-	$content  = '<div class="blog-entry blog-entry-single">';
-	$content .= honeyMarkdown($post['data']);
-	$content .= '<p class="blog-entry-meta">Published by ' . $post['meta']['author_name'] . ' on <a href="/post/' . $slug . '">' . $post['meta']['published_date'] . '</a></p>';
-	$content .= '</div>';
+	$contents = honeyMarkdown($post['data']);
+	$contents = preg_replace('/<h[1-6].*>.*?<\/h[1-6]>/', '', $contents, 1);
+
+	$post['htmlContents'] = $contents;
+
+	ob_start();
+	if (file_exists('themes/default/post-single.php')) {
+		include('themes/default/post-single.php');
+	}
+	else {
+		include('themes/default/post.php');
+	}
+	$content = ob_get_contents();
+	ob_end_clean();
 
 	honeyContent($content);
 });
