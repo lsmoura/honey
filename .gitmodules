@@ -4,6 +4,6 @@
 [submodule "marked"]
 	path = marked
 	url = https://github.com/chjj/marked.git
-[submodule "parsedown"]
-	path = parsedown
-	url = https://github.com/erusev/parsedown.git
+[submodule "php-marked"]
+	path = php-marked
+	url = https://github.com/breeswish/php-marked.git

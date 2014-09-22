@@ -21,6 +21,16 @@ freely, subject to the following restrictions:
 global $webroot;
 global $sitedir;
 
+// php-marked
+require_once("php-marked/src/Marked/RegExp.php");
+require_once("php-marked/src/Marked/Utils.php");
+require_once("php-marked/src/Marked/Renderer.php");
+require_once("php-marked/src/Marked/Lexer.php");
+require_once("php-marked/src/Marked/InlineLexer.php");
+require_once("php-marked/src/Marked/Parser.php");
+require_once("php-marked/src/Marked/Marked.php");
+
+
 config('honey.salt', 'ada15bd1a5ddf0b790ae1dcfd05a1e70');
 
 $sitedir = "site";
@@ -286,6 +296,9 @@ function honeyHeader($onload = '', $admin = false) {
 	// Marked
 	$scripts[] = '/js/marked.min.js';
 
+	// Honey stuff
+	$scripts[] = '/js/honey.js';
+
 	// Honey stylesheets
 	$stylesheets[] = '/css/honey.css';
 	if ($admin)
@@ -419,4 +432,35 @@ function honeyFilenameFromTitle($title) {
 	$ret = preg_replace("([^\w\s\d\-_~,;:\[\]\(\].]|[\.]{2,})", '', $ret);	// Source: http://stackoverflow.com/a/2021729/488212
 
 	return($ret);
+}
+
+class myRenderer extends \Marked\Renderer {
+	public function image($href, $title, $text) {
+		global $webroot;
+
+		$imghref = "";
+		if ($webroot != null && !empty($webroot)) {
+			$imghref .= $webroot;
+		}
+
+		$imghref .= "/img/" . $href;
+
+        $out = '<img src="' . $imghref . '" alt="' . $text . '"';
+        if (strlen($title) > 0) {
+            $out .= ' title="' . $title . '"';
+        }
+        $out .= $this->options['xhtml'] ? '/>' : '>';
+        return $out;
+	}
+}
+
+function honeyMarkdown($text) {
+	$renderer = new myRenderer();
+	$marked = new \Marked\Marked();
+	$marked->setOptions([ 'renderer' => $renderer ]);
+
+	$html = $marked->render($text);
+
+
+	return($html);
 }

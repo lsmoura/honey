@@ -18,7 +18,6 @@ freely, subject to the following restrictions:
 */
 
 require_once("dispatch/src/dispatch.php");
-require_once("parsedown/Parsedown.php");
 
 require_once("honey.php");
 
@@ -42,7 +41,6 @@ if (!isset($webroot) || is_null($webroot)) {
 
 on('GET', '/', function() {
 	$posts = getPostFileList();
-	$Parsedown = new Parsedown();
 	
 	$content  = '<div class="blog-header">';
 	$content .= '<div class="blog-title">' . honeyGetConfig('sitename') . '</div>';
@@ -51,8 +49,8 @@ on('GET', '/', function() {
 	foreach ($posts as $slug => $post) {
 		$content = $post['data'];
 
-		$contents = $Parsedown->text($content);
-		$contents = preg_replace('/<h[1-6]>.*?<\/h[1-6]>/', '', $contents, 1);
+		$contents = honeyMarkdown($content);
+		$contents = preg_replace('/<h[1-6].*>.*?<\/h[1-6]>/', '', $contents, 1);
 
 		$content .= '<div class="blog-entry">';
 		$content .= '<h1 class="blog-entry-title">' . $post['meta']['title'] . '</h1>';
@@ -71,9 +69,8 @@ on('POST', '/editor/update', function() {
 	honeyHeader();
 	echo("<h1>Blog post</h1>\n");
 
-	$Parsedown = new Parsedown();
 	$content = params('content');
-	$htmlContent = $Parsedown->text($content);
+	$htmlContent = honeyMarkdown($content);
 
 	echo('<div class="content">' . $htmlContent . '</div>');
 	honeyFooter();
@@ -91,8 +88,7 @@ on('GET', '/post/:slug', function($slug) {
 	honeyMenu();
 	echo('<div class="container-fluid">');
 
-	$Parsedown = new Parsedown();
-	$htmlContent = $Parsedown->text($data['data']);
+	$htmlContent = honeyMarkdown($data['data']);
 	echo($htmlContent);
 
 	echo('</div>');
