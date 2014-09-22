@@ -42,10 +42,7 @@ if (!isset($webroot) || is_null($webroot)) {
 on('GET', '/', function() {
 	$posts = getPostFileList();
 	
-	$content  = '<div class="blog-header">';
-	$content .= '<div class="blog-title">' . honeyGetConfig('sitename') . '</div>';
-	$content .= '<p class="lead blog-description">' . honeyGetConfig('siteslogan') . '</p>';
-	$content .= '</div>';
+	$content = '';
 	foreach ($posts as $slug => $post) {
 		$postcontent = $post['data'];
 
@@ -78,21 +75,16 @@ on('POST', '/editor/update', function() {
 
 
 on('GET', '/post/:slug', function($slug) {
-	$data = honeyGetPost($slug);
-	if ($data == null) {
+	$post = honeyGetPost($slug);
+	if ($post == null) {
 		error('404', 'Page not found');
 		return;
 	}
 
-	honeyHeader();
-	honeyMenu();
-	echo('<div class="container-fluid">');
+	$content = honeyMarkdown($post['data']);
+	$content .= '<p class="blog-entry-meta">Published by ' . $post['meta']['author_name'] . ' on <a href="/post/' . $slug . '">' . $post['meta']['published_date'] . '</a></p>';
 
-	$htmlContent = honeyMarkdown($data['data']);
-	echo($htmlContent);
-
-	echo('</div>');
-	honeyFooter();
+	honeyContent($content);
 });
 
 // Login/logout procedures

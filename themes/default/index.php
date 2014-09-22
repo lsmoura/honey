@@ -47,6 +47,10 @@
 	</nav>
 <?php endif; ?>
 	<div class="container">
+		<div class="blog-header">
+			<div class="blog-title"><?php echo(honeyGetConfig('sitename')); ?></div>
+			<p class="lead blog-description"><?php echo(honeyGetConfig('siteslogan')); ?></p>
+		</div>
 		<?php echo($contents); ?>
 	</div>
 	<div class="honey-footer">
