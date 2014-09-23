@@ -290,7 +290,7 @@ function honeyContent($contents, $onload = null, $admin = false) {
 	if ($admin)
 		$stylesheets[] = '/css/admin.css';
 
-	include('themes/default/index.php');
+	include('webroot/themes/default/index.php');
 }
 
 
