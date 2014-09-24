@@ -109,7 +109,7 @@ on('GET', '/login', function() {
 
 	$loginerror = flash('loginerror');
 	?>
-	<div class="container"><form method="post" action="/login" role="form">
+	<div class="container"><form method="post" action="<?php getFullUrl('/login'); ?>" role="form">
 		<div class="form-group <?php if($loginerror == 1) echo("has-error has-feedback"); ?>">
 			<label for="password">Credentials</label>
 			<input id="password" name="password" class="form-control" type="password" placeholder="password" />
@@ -129,17 +129,17 @@ on('GET', '/login', function() {
 on('POST', '/login', function() {
 	$pw = params('password');
 	if (honeyLogin($pw) == true) {
-		redirect('/admin/settings');
+		redirect(getFullUrl('/admin'));
 	}
 	else {
 		flash('loginerror', '1');
-		redirect('/login');
+		redirect(getFullUrl('/login'));
 	}
 });
 
 on('GET', '/logout', function() {
 	cookie('honey', '');
-	redirect('/');
+	redirect(getFullUrl('/'));
 });
 
 // === Admin route ===
@@ -151,7 +151,7 @@ before('/^admin\//', function($method, $path) {
 			// All good!
 			return;
 		}
-		redirect('/admin/password');
+		redirect(getFullUrl('/admin/password'));
 		return;
 	}
 
@@ -166,14 +166,14 @@ before('/^admin\//', function($method, $path) {
 		}
 	}
 
-	redirect('/login');
+	redirect(getFullUrl('/login'));
 	return;
 });
 
 // Admin functions
 prefix('admin', function() {
 	on('GET', '/', function() {
-		redirect('/admin/posts');
+		redirect(getFullUrl('/admin/posts'));
 	});
 
 	on('GET', '/posts', function() {
@@ -189,8 +189,9 @@ prefix('admin', function() {
 		});
 		$("#post-edit").click(function() {
 			slug = $(this).data("slug");
-			window.location = "/admin/posts/edit/" + slug;
+			window.location = "' . getFullUrl('/admin/posts/edit/') . '" + slug;
 		});
+		renderer.imgPrefix = "' . getFullUrl('/img/') . '";
 		$("#post-listing-1").click();';
 
 		$i = 1;
@@ -329,7 +330,7 @@ prefix('admin', function() {
 	on('POST', '/settings', function() {
 		honeySetConfig('sitename', params('sitename'));
 		honeySetConfig('siteslogan', params('siteslogan'));
-		redirect('/admin/settings');
+		redirect(getFullUrl('/admin/settings'));
 	});
 
 	on('GET', '/password', function() {
@@ -364,14 +365,13 @@ prefix('admin', function() {
 
 		if ($pw != params('password2')) {
 			flash('message', 'Passwords does not match');
-			redirect('/admin/password');
+			redirect(getFullUrl('/admin/password'));
 			return;
 		}
 
 		honeyPassword('set', $pw);
 		cookie('honey', '');
-
-		redirect('/login');
+		redirect(getFullUrl('/login'));
 	});
 
 	on('GET', '/info', function() {

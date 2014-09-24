@@ -18,8 +18,10 @@ freely, subject to the following restrictions:
 
 var renderer = new marked.Renderer();
 
+renderer.imgPrefix = '/webroot/img/';
+
 renderer.image = function(href, title, text) {
-	var out = '<img src="/webroot/img/' + href + '" alt="' + text + '"';
+	var out = '<img src="' + renderer.imgPrefix + href + '" alt="' + text + '"';
 	if (title)
 		out += ' title="' + title + '"';
 	out += this.options.xhtml ? '/>':'>';

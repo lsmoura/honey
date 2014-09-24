@@ -22,13 +22,13 @@
 		<div class="container-fluid">
 			<nav class="honey-nav">
 				<h1>Honey</h1>
-				<a href="/"><span class="glyphicon glyphicon-home"></span> Your Blog</a>
-				<a href="/admin/posts"><span class="glyphicon glyphicon-edit"></span> Content</a>
+				<a href="<?php echo(getFullUrl('/')); ?>"><span class="glyphicon glyphicon-home"></span> Your Blog</a>
+				<a href="<?php echo(getFullUrl('/admin/posts')); ?>"><span class="glyphicon glyphicon-edit"></span> Content</a>
 				<a href="#"><span class="glyphicon glyphicon-picture"></span> Gallery</a>
 				<span class="pull-right">
-					<a href="/admin/password"><span class="glyphicon glyphicon-lock"></span></a>
-					<a href="/admin/settings"><span class="glyphicon glyphicon-cog"></span></a>
-					<a href="/logout"><span class="glyphicon glyphicon-log-out"></span></a>
+					<a href="<?php echo(getFullUrl('/admin/password')); ?>"><span class="glyphicon glyphicon-lock"></span></a>
+					<a href="<?php echo(getFullUrl('/admin/settings')); ?>"><span class="glyphicon glyphicon-cog"></span></a>
+					<a href="<?php echo(getFullUrl('/logout')); ?>"><span class="glyphicon glyphicon-log-out"></span></a>
 				</span>
 			</ul>
 			</nav>
@@ -38,10 +38,10 @@
 	<nav class="navbar navbar-default" role="navigation">
 		<div class="container-fluid">
 			<ul class="nav navbar-nav">
-				<li><a href="/"><?php echo(honeyGetConfig('sitename')); ?></a></li>
+				<li><a href="<?php echo(getFullUrl('/')); ?>"><?php echo(honeyGetConfig('sitename')); ?></a></li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
-				<li><a href="/admin/posts">Admin</a></li>
+				<li><a href="<?php echo(getFullUrl('/admin/posts')); ?>">Admin</a></li>
 			</ul>
 		</div>
 	</nav>
