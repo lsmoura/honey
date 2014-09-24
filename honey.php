@@ -290,9 +290,13 @@ function honeyContent($contents, $onload = null, $admin = false) {
 	if ($admin)
 		$stylesheets[] = '/css/admin.css';
 
-	include('webroot/themes/default/index.php');
+	include(honeyThemeFile('index.php'));
 }
 
+function honeyThemeFile($filename) {
+	$fn = 'webroot/themes/' . honeyGetConfig('theme') . '/' . $filename;
+	return($fn);
+}
 
 // Retrieve the header of the site
 function honeyHeader($onload = '', $admin = false) {

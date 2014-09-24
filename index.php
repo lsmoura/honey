@@ -50,7 +50,8 @@ on('GET', '/', function() {
 		$contents = preg_replace('/<h[1-6].*>.*?<\/h[1-6]>/', '', $contents, 1);
 		$post['htmlContents'] = $contents;
 
-		include('webroot/themes/default/post.php');
+
+		include(honeyThemeFile('post.php'));
 		/*
 		$content .= '<div class="blog-entry">';
 		$content .= '<h1 class="blog-entry-title">' . $post['meta']['title'] . '</h1>';
@@ -92,11 +93,11 @@ on('GET', '/post/:slug', function($slug) {
 	$post['htmlContents'] = $contents;
 
 	ob_start();
-	if (file_exists('webroot/themes/default/post-single.php')) {
-		include('webroot/themes/default/post-single.php');
+	if (file_exists(honeyThemeFile('post-single.php'))) {
+		include(honeyThemeFile('post-single.php'));
 	}
 	else {
-		include('webroot/themes/default/post.php');
+		include(honeyThemeFile('post.php'));
 	}
 	$content = ob_get_contents();
 	ob_end_clean();
