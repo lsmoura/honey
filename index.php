@@ -35,6 +35,15 @@ s3('secretKey', 'secret');
 s3('dump');
 */
 
+if (config('dispatch.url') == '') {
+	$dispatch_url = 'http://' . $_SERVER['HTTP_HOST'];
+	$strip_url = str_replace($_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_URI']);
+
+	$dispatch_url .= $strip_url . '/webroot';
+
+	config('dispatch.url', $dispatch_url);
+}
+
 if (!isset($webroot) || is_null($webroot)) {
 	$webroot = "/webroot";
 }
@@ -366,9 +375,25 @@ prefix('admin', function() {
 	});
 
 	on('GET', '/info', function() {
-		honeyContent('<pre>' . print_r($_SERVER, true) . '</pre>');
+		$content = '<pre>' . print_r($_SERVER, true) . '</pre>';
+		$content .= "Dispatch URL: " . config('dispatch.url');
+		honeyContent($content);
 	});
 });
+
+/* Let's try to find the files inside our current theme, transparently. */
+/*
+on('GET', '/:path@.*\.css', function($path) {
+	//echo($path);
+	//echo(honeyThemeFile($path));
+	if (file_exists(honeyThemeFile($path))) {
+		redirect('/' . honeyThemeFile($path));
+	}
+	else {
+		error(404);
+	}
+});
+*/
 
 // All done. Let's load honey up!
 dispatch();

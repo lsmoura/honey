@@ -268,15 +268,20 @@ function honeyGetPost($slug) {
 
 // Turn a given url into a valid url
 function getFullUrl($url) {
+	static $prefix = null;
+
+	if ($prefix == null) {
+		$prefix = str_replace($_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_URI']);
+	}
+
 	global $webroot;
 	$ret = $url;
 
 	if ($url[0] == '/') {
-		if ($webroot != '.')
-			$ret = $webroot . "/" . $url;
+		$ret = $prefix . $url;
 	}
 
-	return($ret);
+	return(str_replace('//', '/', $ret));
 }
 
 function honey_stylesheets($stylesheets = array()) {
@@ -304,7 +309,7 @@ function honey_stylesheets($stylesheets = array()) {
 	}
 
 	foreach($cssarray as $cssfile) {
-		echo("\t" . '<link rel="stylesheet" href="/' . honeyThemeFile($cssfile) . '"/>' . "\n");
+		echo("\t" . '<link rel="stylesheet" href="' . honeyThemeURL($cssfile) . '"/>' . "\n");
 	}
 }
 
@@ -333,7 +338,7 @@ function honey_javascript($scripts = array()) {
 	}
 
 	foreach($jsarray as $jsfile) {
-		echo("\t" . '<script src="/' . honeyThemeFile($jsfile) . '" type="text/javascript"></script>' . "\n");
+		echo("\t" . '<script src="' . honeyThemeURL($jsfile) . '" type="text/javascript"></script>' . "\n");
 	}
 
 }
@@ -342,6 +347,9 @@ function honeyContent($contents, $onload = null) {
 	include(honeyThemeFile('index.php'));
 }
 
+/*
+	Retrieve the filesystem path to a theme file. Useful for including the file or getting its contents.
+ */
 function honeyThemeFile($filename) {
 	$theme = 'default';
 
@@ -352,10 +360,41 @@ function honeyThemeFile($filename) {
 		$theme = honeyGetConfig('admin_theme');
 	}
 
-	$fn = 'webroot/themes/' . $theme . '/' . $filename;
+	$fn = dirname(__FILE__) . '/webroot/themes/' . $theme . '/' . $filename;
 	if (file_exists($fn) == false) {
-		$fn = 'webroot/themes/default/' . $filename;
+		$fn = dirname(__FILE__) . '/webroot/themes/default/' . $filename;
 	}
+	return($fn);
+}
+
+/*
+	Retrieves the http-accessible url for a given theme filename. Useful for referencing stylesheets, images or javascript files from inside the theme
+	file structure.
+ */
+function honeyThemeURL($filename) {
+	static $prefix = null;
+
+	if ($prefix == null) {
+		$prefix = str_replace($_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_URI']);
+		$prefix = str_replace('//', '/', $prefix);
+	}
+
+	$theme = 'default';
+
+	if (honeyGlobal('admin') != true) {
+		$theme = honeyGetConfig('theme');
+	}
+	else {
+		$theme = honeyGetConfig('admin_theme');
+	}
+
+	$fn = $prefix . '/themes/' . $theme . '/' . $filename;
+	if (file_exists($fn) == false) {
+		$fn = $prefix . '/themes/default/' . $filename;
+	}
+
+	$fn = str_replace('//', '/', $fn);
+
 	return($fn);
 }
 
@@ -363,6 +402,9 @@ function honeyThemeSetting($key) {
 	static $themeSettings = null;
 
 	if ($themeSettings == null) {
+		if (file_exists(honeyThemeFile('theme.json')) == false) {
+			die("invalid theme");
+		}
 		$themefile = honeyThemeFile('theme.json');
 		$themedata = file_get_contents($themefile);
 		$themeSettings = json_decode($themedata, true);
@@ -436,12 +478,7 @@ class myRenderer extends \Marked\Renderer {
 	public function image($href, $title, $text) {
 		global $webroot;
 
-		$imghref = "";
-		if ($webroot != null && !empty($webroot)) {
-			$imghref .= $webroot;
-		}
-
-		$imghref .= "/img/" . $href;
+		$imghref = getFullUrl('/img/' . $href);
 
         $out = '<img src="' . $imghref . '" alt="' . $text . '"';
         if (strlen($title) > 0) {
