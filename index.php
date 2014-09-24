@@ -52,15 +52,6 @@ on('GET', '/', function() {
 
 
 		include(honeyThemeFile('post.php'));
-		/*
-		$content .= '<div class="blog-entry">';
-		$content .= '<h1 class="blog-entry-title">' . $post['meta']['title'] . '</h1>';
-		$content .= '<p class="blog-entry-meta">Published by ' . $post['meta']['author_name'] . ' on <a href="/post/' . $slug . '">' . $post['meta']['published_date'] . '</a></p>';
-		$content .= '<div class="blog-contents">';
-		$content .= $contents;
-		$content .= '</div>';	// blog-contents
-		$content .= '</div>';	// blog-entry
-		*/
 	}
 	$content = ob_get_contents();
 	ob_end_clean();

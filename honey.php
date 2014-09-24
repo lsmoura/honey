@@ -339,21 +339,6 @@ function honey_javascript($scripts = array()) {
 }
 
 function honeyContent($contents, $onload = null) {
-	/*
-	$stylesheets = array('/bootstrap/bootstrap.min.css', '/bootstrap/bootstrap-theme.min.css');
-	$scripts = array('/js/jquery-2.1.1.min.js', '/bootstrap/bootstrap.min.js');
-
-	// Marked
-	$scripts[] = '/js/marked.min.js';
-
-	// Honey stuff
-	$scripts[] = '/js/honey.js';
-
-	// Honey stylesheets
-	$stylesheets[] = '/css/honey.css';
-	if ($admin)
-		$stylesheets[] = '/css/admin.css';
-	*/
 	include(honeyThemeFile('index.php'));
 }
 
