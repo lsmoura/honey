@@ -161,6 +161,7 @@ before('/^admin\//', function($method, $path) {
 		// Check authentication credentials
 		if (honeyCheckCredentials($auth) == true) {
 			// All good!
+			honeyGlobal('admin', true);
 			return;
 		}
 	}
@@ -231,7 +232,7 @@ prefix('admin', function() {
 		<?php
 		$contents = ob_get_contents();
 		ob_end_clean();
-		honeyContent($contents, $onLoad, true);
+		honeyContent($contents, $onLoad);
 	});
 
 	on('POST', '/posts/save', function() {
@@ -322,7 +323,7 @@ prefix('admin', function() {
 		$content = ob_get_contents();
 		ob_end_clean();
 
-		honeyContent($content, null, true);
+		honeyContent($content, null);
 	});
 
 	on('POST', '/settings', function() {

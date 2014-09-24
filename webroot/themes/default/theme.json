@@ -1,0 +1,30 @@
+{
+	"Name": "Honey default theme",
+	"Version": "1.0",
+	"index": "index.php",
+	"css": [
+		"bootstrap/bootstrap.min.css",
+		"bootstrap/bootstrap-theme.min.css",
+		"css/honey.css"
+	],
+	"js": [
+		"js/jquery-2.1.1.min.js",
+		"bootstrap/bootstrap.min.js",
+		"js/honey.js"
+	],
+	"admin": {
+		"css": [
+			"bootstrap/bootstrap.min.css",
+			"bootstrap/bootstrap-theme.min.css",
+			"css/honey.css",
+			"css/admin.css"
+		],
+		"js": [
+			"js/jquery-2.1.1.min.js",
+			"js/jquery.autosize.min.js",
+			"js/marked.min.js",
+			"bootstrap/bootstrap.min.js",
+			"js/honey.js"
+		]
+	}
+}

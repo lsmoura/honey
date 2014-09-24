@@ -4,8 +4,8 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Honey</title>
-	<?php honey_stylesheets($stylesheets); ?>
-	<?php honey_javascript($scripts); ?>
+	<?php honey_stylesheets(); ?>
+	<?php honey_javascript(); ?>
 	<?php if (isset($onload) && $onload != null): ?>
 	<script type="text/javascript">
 	//<![CDATA[
@@ -16,8 +16,8 @@
 	</script>		
 	<?php endif; ?>
 </head>
-<body class="<?php if($admin == true) echo("admin"); ?>">
-<?php if($admin == true): ?>
+<body class="<?php if(honeyGlobal('admin') == true) echo("admin"); ?>">
+<?php if(honeyGlobal('admin') == true): ?>
 	<div class="honey-head">
 		<div class="container-fluid">
 			<nav class="honey-nav">
@@ -46,8 +46,8 @@
 		</div>
 	</nav>
 <?php endif; ?>
-	<div class="container<?php if($admin == true) echo('-fluid'); ?>">
-		<?php if($admin != true): ?>
+	<div class="container<?php if(honeyGlobal('admin') == true) echo('-fluid'); ?>">
+		<?php if(honeyGlobal('admin') != true): ?>
 		<div class="blog-header">
 			<div class="blog-title"><?php echo(honeyGetConfig('sitename')); ?></div>
 			<p class="lead blog-description"><?php echo(honeyGetConfig('siteslogan')); ?></p>

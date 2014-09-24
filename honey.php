@@ -215,6 +215,22 @@ function honeyCheckCredentials($credentials) {
 	return(false);
 }
 
+/* Handle global instance values.
+   These settings are valid only for the current run.
+ */
+function honeyGlobal($key, $value = null) {
+	static $globalValues = array();
+
+	if ($value === null) {
+		if (array_key_exists($key, $globalValues)) {
+			return($globalValues[$key]);
+		}
+		return(null);
+	}
+
+	$globalValues[$key] = $value;
+}
+
 function honeyLogin($password) {
 	if (honeyPassword('check', $password) == false) {
 		return(false);
@@ -263,19 +279,67 @@ function getFullUrl($url) {
 	return($ret);
 }
 
-function honey_stylesheets($stylesheets) {
+function honey_stylesheets($stylesheets = array()) {
 	foreach ($stylesheets as $s) {
 		echo("\t" . '<link rel="stylesheet" href="' . getFullUrl($s) . '"/>' . "\n");
 	}
-}
 
-function honey_javascript($scripts) {
-	foreach ($scripts as $script) {
-		echo("\t" . '<script src="' . getFullUrl($script) . '" type="text/javascript"></script>' . "\n");
+	// Add theme stylesheets
+	$cssarray = null;
+
+	if (honeyGlobal('admin') == true) {
+		$admin = honeyThemeSetting('admin');
+		$cssarray = $admin['css'];
+	}
+	else {
+		$cssarray = honeyThemeSetting('css');
+	}
+
+	if ($cssarray == null) {
+		$cssarray = array();
+	}
+
+	if (is_array($cssarray) == false) {
+		$cssarray = [ $cssarray ];
+	}
+
+	foreach($cssarray as $cssfile) {
+		echo("\t" . '<link rel="stylesheet" href="/' . honeyThemeFile($cssfile) . '"/>' . "\n");
 	}
 }
 
-function honeyContent($contents, $onload = null, $admin = false) {
+function honey_javascript($scripts = array()) {
+	foreach ($scripts as $script) {
+		echo("\t" . '<script src="' . getFullUrl($script) . '" type="text/javascript"></script>' . "\n");
+	}
+
+
+	$jsarray = null;
+
+	if (honeyGlobal('admin') == true) {
+		$admin = honeyThemeSetting('admin');
+		$jsarray = $admin['js'];
+	}
+	else {
+		$jsarray = honeyThemeSetting('js');
+	}
+
+	if ($jsarray == null) {
+		$jsarray = array();
+	}
+
+	if (is_array($jsarray) == false) {
+		$jsarray = [ $jsarray ];
+	}
+
+	foreach($jsarray as $jsfile) {
+		echo("\t" . '<script src="/' . honeyThemeFile($jsfile) . '" type="text/javascript"></script>' . "\n");
+	}
+
+}
+
+function honeyContent($contents, $onload = null) {
+	/*
 	$stylesheets = array('/bootstrap/bootstrap.min.css', '/bootstrap/bootstrap-theme.min.css');
 	$scripts = array('/js/jquery-2.1.1.min.js', '/bootstrap/bootstrap.min.js');
 
@@ -289,13 +353,41 @@ function honeyContent($contents, $onload = null, $admin = false) {
 	$stylesheets[] = '/css/honey.css';
 	if ($admin)
 		$stylesheets[] = '/css/admin.css';
-
+	*/
 	include(honeyThemeFile('index.php'));
 }
 
 function honeyThemeFile($filename) {
-	$fn = 'webroot/themes/' . honeyGetConfig('theme') . '/' . $filename;
+	$theme = 'default';
+
+	if (honeyGlobal('admin') != true) {
+		$theme = honeyGetConfig('theme');
+	}
+	else {
+		$theme = honeyGetConfig('admin_theme');
+	}
+
+	$fn = 'webroot/themes/' . $theme . '/' . $filename;
+	if (file_exists($fn) == false) {
+		$fn = 'webroot/themes/default/' . $filename;
+	}
 	return($fn);
+}
+
+function honeyThemeSetting($key) {
+	static $themeSettings = null;
+
+	if ($themeSettings == null) {
+		$themefile = honeyThemeFile('theme.json');
+		$themedata = file_get_contents($themefile);
+		$themeSettings = json_decode($themedata, true);
+	}
+
+	if (array_key_exists($key, $themeSettings)) {
+		return($themeSettings[$key]);
+	}
+
+	return(null);
 }
 
 // Full page content editor
