@@ -68,18 +68,6 @@ on('GET', '/', function() {
 	honeyContent($content);
 });
 
-on('POST', '/editor/update', function() {
-	honeyHeader();
-	echo("<h1>Blog post</h1>\n");
-
-	$content = params('content');
-	$htmlContent = honeyMarkdown($content);
-
-	echo('<div class="content">' . $htmlContent . '</div>');
-	honeyFooter();
-});
-
-
 on('GET', '/post/:slug', function($slug) {
 	$post = honeyGetPost($slug);
 	if ($post == null) {
@@ -117,8 +105,7 @@ on('GET', '/login', function() {
 		}
 	}
 
-	honeyHeader();
-	honeyMenu();
+	ob_start();
 
 	$loginerror = flash('loginerror');
 	?>
@@ -133,7 +120,10 @@ on('GET', '/login', function() {
 		<button type="submit" class="btn btn-default">Login</button>
 	</form></div>
 	<?php
-	honeyFooter();
+
+	$content = ob_get_contents();
+	ob_end_clean();
+	honeyContent($content);
 });
 
 on('POST', '/login', function() {
@@ -315,10 +305,9 @@ prefix('admin', function() {
 	});
 
 	on('GET', '/settings', function(){
-		honeyHeader(null, true);
-		honeyAdminMenu();
+		ob_start();
 		?>
-		<div class="container"><form method="post" action="/admin/settings" role="form">
+		<form method="post" action="/admin/settings" role="form">
 			<div class="form-group">
 				<label for="sitename">Site name</label>
 				<input id="sitename" name="sitename" type="text" placeholder="blog name" class="form-control" value="<?php echo(honeyGetConfig('sitename')) ?>" />
@@ -328,9 +317,12 @@ prefix('admin', function() {
 				<input id="siteslogan" name="siteslogan" type="text" placeholder="your slogan here" class="form-control" value="<?php echo(honeyGetConfig('siteslogan')) ?>" />
 			</div>
 			<button type="submit" class="btn btn-default">Save</button>
-		</form></div>
+		</form>
 		<?php
-		honeyFooter();
+		$content = ob_get_contents();
+		ob_end_clean();
+
+		honeyContent($content, null, true);
 	});
 
 	on('POST', '/settings', function() {
@@ -340,8 +332,7 @@ prefix('admin', function() {
 	});
 
 	on('GET', '/password', function() {
-		honeyHeader(null, true);
-		honeyAdminMenu();
+		ob_start();
 		?>
 		<div class="container"><form method="post" action="/admin/password" role="form">
 			<div class="form-group">
@@ -356,7 +347,10 @@ prefix('admin', function() {
 			<button type="submit" class="btn btn-default">Save</button>
 		</form></div>
 		<?php
-		honeyFooter();
+		$content = ob_get_contents();
+		ob_end_clean();
+
+		honeyContent($content);
 	});
 
 	on('POST', '/password', function() {

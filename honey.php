@@ -298,112 +298,16 @@ function honeyThemeFile($filename) {
 	return($fn);
 }
 
-// Retrieve the header of the site
-function honeyHeader($onload = '', $admin = false) {
-	$stylesheets = array('/bootstrap/bootstrap.min.css', '/bootstrap/bootstrap-theme.min.css');
-	$scripts = array('/js/jquery-2.1.1.min.js', '/bootstrap/bootstrap.min.js');
-
-	// Marked
-	$scripts[] = '/js/marked.min.js';
-
-	// Honey stuff
-	$scripts[] = '/js/honey.js';
-	if ($admin)
-		$scripts[] = '/js/jquery.autosize.min.js';
-
-	// Honey stylesheets
-	$stylesheets[] = '/css/honey.css';
-
-	if ($admin)
-		$stylesheets[] = '/css/admin.css';
-
-	echo("<!doctype html>\n<html lang=\"en\">\n<head>\n");
-	echo("\t<meta charset=\"utf-8\">\n");
-	echo("\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n");
-	echo("\t<title>Honey</title>\n");
-	foreach ($stylesheets as $s) {
-		echo("\t" . '<link rel="stylesheet" href="' . getFullUrl($s) . '"/>' . "\n");
-	}
-	foreach ($scripts as $script) {
-		echo("\t" . '<script src="' . getFullUrl($script) . '" type="text/javascript"></script>' . "\n");
-	}
-	if ($onload != '') {
-		// CDATA, so we're XHTML compliant
-		echo("<script type=\"text/javascript\">\n//<![CDATA[\n\$(document).ready(function() { $onload });\n//]]>\n</script>");
-	}
-	echo("\n");
-	?>
-	</head>
-	<?php if($admin == true): ?>
-		<body class="admin">
-	<?php else: ?>
-		<body>
-	<?php endif;
-}
-
-// Retrieve the site footer
-function honeyFooter() {
-	?>
-    <div class="honey-footer">
-		<p>The Honey blog platform by <a href="https://twitter.com/lsmoura">@lsmoura</a>.</p>
-		<p><a href="#">Back to top</a></p>
-    </div>
-    </body>
-    </html>
-    <?php
-}
-
-// Admin menu
-function honeyAdminMenu() {
-	?>
-	<div class="honey-head">
-		<div class="container-fluid">
-			<nav class="honey-nav">
-				<h1>Honey</h1>
-				<a href="/"><span class="glyphicon glyphicon-home"></span> Your Blog</a>
-				<a href="/admin/posts"><span class="glyphicon glyphicon-edit"></span> Content</a>
-				<a href="#"><span class="glyphicon glyphicon-picture"></span> Gallery</a>
-				<span class="pull-right">
-					<a href="/admin/password"><span class="glyphicon glyphicon-lock"></span></a>
-					<a href="/admin/settings"><span class="glyphicon glyphicon-cog"></span></a>
-					<a href="/logout"><span class="glyphicon glyphicon-log-out"></span></a>
-				</span>
-			</ul>
-			</nav>
-		</div>
-	</div>
-	<?php
-}
-
-// Site menu
-function honeyMenu() {
-	global $blog_title;
-	?>
-	<nav class="navbar navbar-default" role="navigation">
-		<div class="container-fluid">
-			<ul class="nav navbar-nav">
-				<li><a href="/"><?php echo(honeyGetConfig('sitename')); ?></a></li>
-			</ul>
-			<ul class="nav navbar-nav navbar-right">
-				<li><a href="/admin/posts">Admin</a></li>
-			</ul>
-		</div>
-	</nav>
-	<?php	
-}
-
 // Full page content editor
 function honeyEditor($content = null, $slug = null) {
 	$onLoad = "$('#editor textarea').bind('input propertychange', function() {
 		$('#preview').html(marked(this.value));
-		//console.log(this.value);
 	});
 	$('#preview').html(marked($('#editor textarea').text()));
 	$('.full-height').autosize();";
 
-	honeyHeader($onLoad, true);
-	honeyAdminMenu();
-	echo('<div class="container-fluid">');
+	ob_start();
+
 	echo("<h1>Editor</h1>\n");
 	echo('<form method="post" action="/admin/posts/save">');
 	if ($slug != null) {
@@ -422,8 +326,11 @@ function honeyEditor($content = null, $slug = null) {
 	echo('</div>');
 	echo('</div>');
 	echo('</form>');
-	echo("<div>");	
-	honeyFooter();	
+
+	$htmlContent = ob_get_contents();
+	ob_end_clean();
+
+	honeyContent($htmlContent);
 }
 
 function honeyTitleCleanup($val) {
